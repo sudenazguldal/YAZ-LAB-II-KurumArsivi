@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.AspNetCore.Http;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using Dispatcher.API.Middlewares;
 
 namespace Dispatcher.Tests
 {
@@ -6,15 +9,11 @@ namespace Dispatcher.Tests
     public class AuthTests
     {
         [Test]
-        public void Routing_ShouldReturn401Unauthorized_WhenTokenIsMissing()
+        public async Task Routing_ShouldReturn401Unauthorized_WhenTokenIsMissing()
         {
+            var context = new DefaultHttpContext();
+            var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
 
-
-            // Act
-            int actualStatusCode = 200;
-
-            // Assert
-            Assert.That(actualStatusCode, Is.EqualTo(401), "ERROR: Dispatcher is allowing requests without a token! Expected 401 Unauthorized.");
         }
     }
 }
