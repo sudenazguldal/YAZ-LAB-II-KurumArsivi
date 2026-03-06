@@ -1,0 +1,6 @@
+@Dispatcher.API_HostAddress = http://localhost:5252
+
+GET {{Dispatcher.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

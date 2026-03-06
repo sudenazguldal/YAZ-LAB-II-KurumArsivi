@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Dispatcher.API/Dispatcher.API.csproj" />
+    <Project Path="src/Document.Service/Document.Service.csproj" />
+    <Project Path="src/Login.Service/Login.Service.csproj" />
+    <Project Path="src/Search.Service/Search.Service.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Dispatcher.Tests/Dispatcher.Tests.csproj" />
+  </Folder>
+</Solution>
