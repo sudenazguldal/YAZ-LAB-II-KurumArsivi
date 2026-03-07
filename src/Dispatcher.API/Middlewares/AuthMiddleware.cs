@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Dispatcher.API.Middlewares
@@ -6,33 +9,73 @@ namespace Dispatcher.API.Middlewares
     public class AuthMiddleware
     {
         private readonly RequestDelegate _next;
+        private const string SecretKey = "bu-cok-gizli-bir-anahtar-en-az-32-karakter";
 
         public AuthMiddleware(RequestDelegate next)
         {
-            // _next "eğer sorun yoksa isteği içerideki servislere gönder" komutudur.
             _next = next;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Kural 1: Kullanıcı Login yapmaya  çalışıyorsa ona kimlik sorma. bırak geçsin.
+            // /api/login whitelist
             if (context.Request.Path.StartsWithSegments("/api/login"))
             {
                 await _next(context);
                 return;
             }
 
-            // Kural 2: Diğer tüm istekler için "Authorization" (Yetki) başlığı var mı kontrol et.
+            // Token var mı?
             if (!context.Request.Headers.ContainsKey("Authorization"))
             {
-                // Kimlik yoksa 401 fırlat ve işlemi burada bitir. İçeri giremez.
                 context.Response.StatusCode = 401;
-                await context.Response.WriteAsync("CRITICAL ERROR: No token provided. Access Denied.");
+                await context.Response.WriteAsync("No token provided.");
                 return;
             }
 
-            // Eğer kimlik varsa, şimdilik geçmesine izin ver (İleride burada JWT doğrulaması yapacağız).
+            var token = context.Request.Headers["Authorization"].ToString();
+
+            // "Bearer " formatında mı?
+            if (!token.StartsWith("Bearer "))
+            {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync("Invalid token format.");
+                return;
+            }
+
+            // JWT imzasını doğrula
+            var jwtToken = token.Substring(7); // "Bearer " kısmını at
+            if (!ValidateToken(jwtToken))
+            {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync("Invalid or expired token.");
+                return;
+            }
+
             await _next(context);
+        }
+
+        private bool ValidateToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(SecretKey);
+
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                }, out _);
+
+                return true;
+            }
+            catch
+            {
+                return false; // İmza geçersiz → 401
+            }
         }
     }
 }
