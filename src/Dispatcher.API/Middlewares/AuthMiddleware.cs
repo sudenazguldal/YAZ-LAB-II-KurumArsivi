@@ -24,7 +24,8 @@ namespace Dispatcher.API.Middlewares
                 await _next(context);
                 return;
             }
-          
+
+
             // Token var mı?
             if (!context.Request.Headers.ContainsKey("Authorization"))
             {
@@ -36,12 +37,14 @@ namespace Dispatcher.API.Middlewares
             var token = context.Request.Headers["Authorization"].ToString();
 
             // "Bearer " formatında mı?
+            
             if (!token.StartsWith("Bearer "))
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Invalid token format.");
                 return;
             }
+           
 
             // JWT imzasını doğrula
             var jwtToken = token.Substring(7); // "Bearer " kısmını at
@@ -52,8 +55,10 @@ namespace Dispatcher.API.Middlewares
                 return;
             }
 
+
+
             await _next(context);
-        }
+        } 
 
         private bool ValidateToken(string token)
         {

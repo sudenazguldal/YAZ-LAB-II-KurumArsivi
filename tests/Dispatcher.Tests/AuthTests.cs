@@ -54,5 +54,18 @@ namespace Dispatcher.Tests
             // Assert — 401 OLMAMALI
             Assert.That(context.Response.StatusCode, Is.Not.EqualTo(401));
         }
+
+        [Test]
+        public async Task ShouldRoute_ToDocumentService_WhenPathStartsWithDocuments()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/documents";
+            // Token YOK — whitelist'e alacağız
+
+            var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
+            await middleware.InvokeAsync(context);
+
+            Assert.That(context.Response.Headers.ContainsKey("X-Routed-To"), Is.True);
+        }
     }
 }
