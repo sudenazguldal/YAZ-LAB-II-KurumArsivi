@@ -19,12 +19,12 @@ namespace Dispatcher.API.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             // /api/login whitelist
-            /*if (context.Request.Path.StartsWithSegments("/api/login"))
+            if (context.Request.Path.StartsWithSegments("/api/login"))
             {
                 await _next(context);
                 return;
             }
-          */
+          
             // Token var mı?
             if (!context.Request.Headers.ContainsKey("Authorization"))
             {
