@@ -24,7 +24,12 @@ namespace Dispatcher.API.Middlewares
                 await _next(context);
                 return;
             }
-
+            if (context.Request.Path.StartsWithSegments("/api/documents"))
+            {
+                context.Response.Headers["X-Routed-To"] = "document-service";
+                await _next(context);
+                return;
+            }
 
             // Token var mı?
             if (!context.Request.Headers.ContainsKey("Authorization"))
