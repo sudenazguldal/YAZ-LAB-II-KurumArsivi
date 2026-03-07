@@ -37,5 +37,22 @@ namespace Dispatcher.Tests
             // AuthMiddleware token'ı doğrulamıyor var mı yok mu bakıyor
             Assert.That(context.Response.StatusCode, Is.EqualTo(401));
         }
+
+        [Test]
+        public async Task ShouldAllow_LoginEndpoint_WithoutToken()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/login";
+            // Token YOK ama /login geçmeli
+
+            var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
+
+            // Act
+            await middleware.InvokeAsync(context);
+
+            // Assert — 401 OLMAMALI
+            Assert.That(context.Response.StatusCode, Is.Not.EqualTo(401));
+        }
     }
 }
