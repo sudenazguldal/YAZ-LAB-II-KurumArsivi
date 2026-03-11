@@ -33,8 +33,7 @@ namespace Dispatcher.Tests
 
             await middleware.InvokeAsync(context);
 
-            // Şu an kod bunu GEÇMEYECEK çünkü 
-            // AuthMiddleware token'ı doğrulamıyor var mı yok mu bakıyor
+        
             Assert.That(context.Response.StatusCode, Is.EqualTo(401));
         }
 
@@ -44,7 +43,7 @@ namespace Dispatcher.Tests
             // Arrange
             var context = new DefaultHttpContext();
             context.Request.Path = "/api/login";
-            // Token YOK ama /login geçmeli
+       
 
             var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
 
@@ -66,6 +65,19 @@ namespace Dispatcher.Tests
             await middleware.InvokeAsync(context);
 
             Assert.That(context.Response.Headers.ContainsKey("X-Routed-To"), Is.True);
+        }
+
+        [Test]
+        public async Task ShouldReturn401_WhenRequestIsForDocumentsPath_AndTokenIsMissing()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/documents";
+
+            var middleware = new AuthMiddleware(_ => Task.CompletedTask);
+
+            await middleware.InvokeAsync(context);
+
+            Assert.That(context.Response.StatusCode, Is.EqualTo(401));
         }
     }
 }
