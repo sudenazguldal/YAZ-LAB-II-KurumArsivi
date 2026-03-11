@@ -19,10 +19,14 @@ namespace Dispatcher.API.Middlewares
                 context.Response.Headers["X-Routed-To"] = "document-service";
             }
 
-            else if (context.Request.Path.StartsWithSegments("/api/search"))
+             if (context.Request.Path.StartsWithSegments("/api/search"))
             {
                 context.Response.Headers["X-Routed-To"] = "search-service";
             }
+
+
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            await context.Response.WriteAsync("Route not found.");
 
 
             await _next(context);
