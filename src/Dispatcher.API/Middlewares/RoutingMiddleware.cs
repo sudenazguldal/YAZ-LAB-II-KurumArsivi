@@ -19,7 +19,7 @@ namespace Dispatcher.API.Middlewares
                 context.Response.Headers["X-Routed-To"] = "document-service";
             }
 
-            if (context.Request.Path.StartsWithSegments("/api/search"))
+            else if (context.Request.Path.StartsWithSegments("/api/search"))
             {
                 context.Response.Headers["X-Routed-To"] = "search-service";
             }
