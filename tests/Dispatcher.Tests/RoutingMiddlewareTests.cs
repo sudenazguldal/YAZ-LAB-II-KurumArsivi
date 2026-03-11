@@ -36,6 +36,21 @@ namespace Dispatcher.Tests
             Assert.That(context.Response.Headers["X-Routed-To"].ToString(), Is.EqualTo("search-service"));
         }
 
+        [Test]
+
+        public async Task ShouldReturn404_WhenPathIsUnknown()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/unknown";
+
+            var middleware = new RoutingMiddleware(_ => Task.CompletedTask);
+
+            await middleware.InvokeAsync(context);
+
+            Assert.That(context.Response.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
+
+        }
+
 
     }
 }
