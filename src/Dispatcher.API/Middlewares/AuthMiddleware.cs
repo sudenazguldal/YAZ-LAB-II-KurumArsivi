@@ -44,19 +44,18 @@ namespace Dispatcher.API.Middlewares
                 await context.Response.WriteAsync("Invalid token format.");
                 return;
             }
-           
+
 
             // JWT imzasını doğrula
             var jwtToken = token.Substring(7); // "Bearer " kısmını at
+           
             if (!ValidateToken(jwtToken))
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Invalid or expired token.");
                 return;
             }
-
-
-
+           
             await _next(context);
         } 
 
