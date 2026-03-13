@@ -38,12 +38,12 @@ namespace Dispatcher.API.Middlewares
 
             // "Bearer " formatında mı?
             
-           /* if (!token.StartsWith("Bearer "))
+            if (!token.StartsWith("Bearer "))
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Invalid token format.");
                 return;
-            }*/
+            }
            
 
             // JWT imzasını doğrula
