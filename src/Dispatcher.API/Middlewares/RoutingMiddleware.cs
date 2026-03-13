@@ -17,19 +17,23 @@ namespace Dispatcher.API.Middlewares
             if (context.Request.Path.StartsWithSegments("/api/documents"))
             {
                 context.Response.Headers["X-Routed-To"] = "document-service";
+                await _next(context);
+                return;
             }
 
              if (context.Request.Path.StartsWithSegments("/api/search"))
             {
                 context.Response.Headers["X-Routed-To"] = "search-service";
+                await _next(context);
+                return;
             }
 
-
+            //hiçbir route eşleşmezse 404 dön
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             await context.Response.WriteAsync("Route not found.");
 
 
-            await _next(context);
+
         }
 
 
