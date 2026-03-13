@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Dispatcher.API.Middlewares;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Threading.Tasks;
-using Dispatcher.API.Middlewares;
 
 namespace Dispatcher.Tests
 {
@@ -103,6 +106,27 @@ namespace Dispatcher.Tests
 
             Assert.That(context.Response.StatusCode, Is.EqualTo(401));
             Assert.That(body, Is.EqualTo("Bearer token is empty."));
+        }
+
+        [Test]
+        public async Task InvokeAsync_ShouldCallNext_WhenTokenIsValid()
+        {
+            var nextCalled = false;
+            var context = new DefaultHttpContext();
+
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("bu-cok-gizli-bir-anahtar-en-az-32-karakter"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds
+            ));
+
+            context.Request.Headers["Authorization"] = $"Bearer {token}";
+            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; });
+
+            await middleware.InvokeAsync(context);
+
+            Assert.That(nextCalled, Is.True);
         }
     }
 }
