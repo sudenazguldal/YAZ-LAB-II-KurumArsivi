@@ -68,5 +68,23 @@ namespace Dispatcher.Tests
 
             Assert.That(context.Response.StatusCode, Is.EqualTo(401));
         }
+
+        [Test]
+        public async Task InvokeAsync_ShouldReturn401_WhenAuthorizationHeaderDoesNotStartWithBearer()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Headers["Authorization"] = "Basic sometoken";
+            context.Response.Body = new MemoryStream();
+
+            var middleware = new AuthMiddleware(_ => Task.CompletedTask);
+
+            await middleware.InvokeAsync(context);
+
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var body = new StreamReader(context.Response.Body).ReadToEnd();
+
+            Assert.That(context.Response.StatusCode, Is.EqualTo(401));
+            Assert.That(body, Is.EqualTo("Invalid token format.")); //  Bearer kapalıyken bu mesaj gelmez
+        }
     }
 }
