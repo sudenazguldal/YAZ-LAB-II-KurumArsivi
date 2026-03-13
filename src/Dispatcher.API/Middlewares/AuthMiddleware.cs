@@ -62,7 +62,7 @@ namespace Dispatcher.API.Middlewares
                 return;
             }
            
-           // await _next(context);
+            await _next(context);
         } 
 
         private bool ValidateToken(string token)

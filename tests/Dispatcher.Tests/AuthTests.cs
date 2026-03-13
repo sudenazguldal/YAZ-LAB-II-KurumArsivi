@@ -125,7 +125,6 @@ namespace Dispatcher.Tests
             var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; });
 
             await middleware.InvokeAsync(context);
-
             Assert.That(nextCalled, Is.True);
         }
     }
