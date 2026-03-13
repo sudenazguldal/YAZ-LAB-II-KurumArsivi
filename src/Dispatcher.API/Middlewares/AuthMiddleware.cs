@@ -48,7 +48,13 @@ namespace Dispatcher.API.Middlewares
 
             // JWT imzasını doğrula
             var jwtToken = token.Substring(7); // "Bearer " kısmını at
-           
+            if (string.IsNullOrWhiteSpace(jwtToken))
+            {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync("Bearer token is empty.");
+                return;
+            }
+
             if (!ValidateToken(jwtToken))
             {
                 context.Response.StatusCode = 401;
