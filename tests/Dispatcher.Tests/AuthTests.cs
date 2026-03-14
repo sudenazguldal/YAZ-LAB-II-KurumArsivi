@@ -127,5 +127,18 @@ namespace Dispatcher.Tests
             await middleware.InvokeAsync(context);
             Assert.That(nextCalled, Is.True);
         }
+
+        [Test]
+        public async Task InvokeAsync_ShouldNotCallNext_WhenTokenIsMissing()
+        {
+            var nextCalled = false;
+            var context = new DefaultHttpContext();
+
+            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; });
+
+            await middleware.InvokeAsync(context);
+
+            Assert.That(nextCalled, Is.False);
+        }
     }
 }
