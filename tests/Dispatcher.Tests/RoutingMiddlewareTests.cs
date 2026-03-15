@@ -35,6 +35,20 @@ namespace Dispatcher.Tests
             Assert.That(context.Response.Headers.ContainsKey("X-Routed-To"), Is.True);
             Assert.That(context.Response.Headers["X-Routed-To"].ToString(), Is.EqualTo("search-service"));
         }
+        [Test]
+        public async Task ShouldRoute_ToLoginService_WhenPathStartsWithAuth()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/auth/login";
+
+            var middleware = new RoutingMiddleware(_ => Task.CompletedTask);
+
+            await middleware.InvokeAsync(context);
+
+            Assert.That(context.Response.Headers.ContainsKey("X-Routed-To"), Is.True);
+            Assert.That(context.Response.Headers["X-Routed-To"].ToString(),
+                Is.EqualTo("login-service"));
+        }
 
         [Test]
 
