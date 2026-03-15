@@ -20,8 +20,13 @@ namespace Dispatcher.API.Middlewares
                 await _next(context);
                 return;
             }
-
-             if (context.Request.Path.StartsWithSegments("/api/search"))
+            if (context.Request.Path.StartsWithSegments("/api/auth"))
+            {
+                context.Response.Headers["X-Routed-To"] = "login-service";
+                await _next(context);
+                return;
+            }
+            if (context.Request.Path.StartsWithSegments("/api/search"))
             {
                 context.Response.Headers["X-Routed-To"] = "search-service";
                 await _next(context);
