@@ -95,3 +95,15 @@ volumes:
   mongo-login-data:
   mongo-document-data:
   mongo-search-data:
+
+
+frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - public-net
+    depends_on:
+      - dispatcher  
