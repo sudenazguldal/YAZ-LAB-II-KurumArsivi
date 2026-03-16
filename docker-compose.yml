@@ -18,6 +18,7 @@ services:
     environment:
       - MongoDB__ConnectionString=mongodb://mongodb-dispatcher:27017
       - LoginService__Url=http://login-service:8080
+      - Jwt__Secret=${JWT_SECRET}
       - DocumentService__Url=http://document-service:8080
       - SearchService__Url=http://search-service:8080
     depends_on:
@@ -41,6 +42,7 @@ services:
       - internal-net
     environment:
       - MongoDB__ConnectionString=mongodb://mongodb-login:27017
+      - Jwt__Secret=${JWT_SECRET}
     depends_on:
       - mongodb-login
 

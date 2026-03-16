@@ -9,6 +9,7 @@
     <Project Path="tests/Dispatcher.Tests/Dispatcher.Tests.csproj" />
   </Folder>
   <Folder Name="/Çözüm Öğeleri/">
+    <File Path=".env" />
     <File Path="docker-compose.yml" />
   </Folder>
 </Solution>
