@@ -15,6 +15,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
 
+
 builder.Services.Configure<JwtSettings>(options =>
 {
     options.Secret = builder.Configuration["Jwt__Secret"] ?? string.Empty;
