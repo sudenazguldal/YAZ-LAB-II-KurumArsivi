@@ -1,5 +1,6 @@
 ﻿using Dispatcher.API.Middlewares;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,12 +12,26 @@ namespace Dispatcher.Tests
     [TestFixture]
     public class AuthTests
     {
+
+        private AuthMiddleware CreateMiddleware(string? secret = "bu-cok-gizli-bir-anahtar-en-az-32-karakter")
+        {
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+            { "Jwt__Secret", secret }
+                })
+                .Build();
+
+            return new AuthMiddleware(_ => Task.CompletedTask, config);
+        }
+
+
         [Test]
         public async Task Routing_ShouldReturn401Unauthorized_WhenTokenIsMissing()
         {
             // Arrange
             var context = new DefaultHttpContext();
-            var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
+            var middleware = CreateMiddleware();
 
             // Act
             await middleware.InvokeAsync(context);
@@ -32,7 +47,7 @@ namespace Dispatcher.Tests
         {
             var context = new DefaultHttpContext();
             context.Request.Headers["Authorization"] = "Bearer gecersiz_token";
-            var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
+            var middleware = CreateMiddleware();
 
             await middleware.InvokeAsync(context);
 
@@ -48,7 +63,7 @@ namespace Dispatcher.Tests
             context.Request.Path = "/api/login";
        
 
-            var middleware = new AuthMiddleware(innerHttpContext => Task.CompletedTask);
+            var middleware = CreateMiddleware();
 
             // Act
             await middleware.InvokeAsync(context);
@@ -65,7 +80,8 @@ namespace Dispatcher.Tests
             var context = new DefaultHttpContext();
             context.Request.Path = "/api/documents";
 
-            var middleware = new AuthMiddleware(_ => Task.CompletedTask);
+                        var middleware = CreateMiddleware();
+
 
             await middleware.InvokeAsync(context);
 
@@ -79,7 +95,8 @@ namespace Dispatcher.Tests
             context.Request.Headers["Authorization"] = "Basic sometoken";
             context.Response.Body = new MemoryStream();
 
-            var middleware = new AuthMiddleware(_ => Task.CompletedTask);
+            var middleware = CreateMiddleware();
+
 
             await middleware.InvokeAsync(context);
 
@@ -97,7 +114,8 @@ namespace Dispatcher.Tests
             context.Request.Headers["Authorization"] = "Bearer ";
             context.Response.Body = new MemoryStream();
 
-            var middleware = new AuthMiddleware(_ => Task.CompletedTask);
+            var middleware = CreateMiddleware();
+
 
             await middleware.InvokeAsync(context);
 
@@ -122,7 +140,13 @@ namespace Dispatcher.Tests
             ));
 
             context.Request.Headers["Authorization"] = $"Bearer {token}";
-            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; });
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                  {
+                      { "Jwt__Secret", "bu-cok-gizli-bir-anahtar-en-az-32-karakter" }
+                  })
+                .Build();
+            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; }, config);
 
             await middleware.InvokeAsync(context);
             Assert.That(nextCalled, Is.True);
@@ -134,7 +158,13 @@ namespace Dispatcher.Tests
             var nextCalled = false;
             var context = new DefaultHttpContext();
 
-            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; });
+            var config = new ConfigurationBuilder()
+                  .AddInMemoryCollection(new Dictionary<string, string?>
+                  {
+                       { "Jwt__Secret", "bu-cok-gizli-bir-anahtar-en-az-32-karakter" }
+                  })
+                  .Build();
+            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; }, config);
 
             await middleware.InvokeAsync(context);
 

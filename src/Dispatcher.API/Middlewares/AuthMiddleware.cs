@@ -9,11 +9,13 @@ namespace Dispatcher.API.Middlewares
     public class AuthMiddleware
     {
         private readonly RequestDelegate _next;
-        private const string SecretKey = "bu-cok-gizli-bir-anahtar-en-az-32-karakter";
+        private readonly string _secretKey;
 
-        public AuthMiddleware(RequestDelegate next)
+        public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
+            _secretKey = configuration["Jwt__Secret"]
+                         ?? throw new InvalidOperationException("JWT secret not configured");
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -70,7 +72,7 @@ namespace Dispatcher.API.Middlewares
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(SecretKey);
+                var key = Encoding.ASCII.GetBytes(_secretKey);
 
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
