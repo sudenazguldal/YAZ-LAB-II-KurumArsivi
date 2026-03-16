@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:5000";
 
+
 async function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -32,6 +33,7 @@ async function login() {
     }
 }
 
+
 function showMainPage() {
     document.getElementById("login-page").style.display = "none";
     document.getElementById("main-page").style.display = "block";
@@ -61,10 +63,17 @@ async function searchDocuments() {
 
         if (response.ok) {
             const data = await response.json();
-            //eger veri varsa baslıkları listeliyorız
-            results.innerHTML = data.length
-                ? data.map(d => `<p>${d.title}</p>`).join("")
-                : "<p>Sonuç bulunamadı.</p>";
+           results.innerHTML = data.length
+    ? data.map(d => `
+        <div class="document-card">
+            <i class="bi bi-file-earmark-text"></i>
+            <div class="document-info">
+                <p class="document-title">${d.title}</p>
+                <p class="document-date">${d.date ? new Date(d.date).toLocaleDateString("tr-TR") : "Tarih yok"}</p>
+            </div>
+        </div>
+    `).join("")
+    : "<p class='no-result'>Sonuç bulunamadı.</p>";
         } else {
             results.textContent = "Arama başarısız.";
         }
