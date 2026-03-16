@@ -15,14 +15,14 @@ namespace Login.Service.Services;
 internal sealed class AuthService : IAuthService
 {
     private readonly IMongoCollection<User> _users;
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
-    public AuthService(IOptions<MongoDbSettings> settings, IConfiguration configuration)
+    public AuthService(IOptions<MongoDbSettings> mongoSettings, IOptions<JwtSettings> jwtSettings)
     {
-        var client = new MongoClient(settings.Value.ConnectionString);
-        var database = client.GetDatabase(settings.Value.DatabaseName);
-        _users = database.GetCollection<User>(settings.Value.UsersCollection);
-        _configuration = configuration;
+        var client = new MongoClient(mongoSettings.Value.ConnectionString);
+        var database = client.GetDatabase(mongoSettings.Value.DatabaseName);
+        _users = database.GetCollection<User>(mongoSettings.Value.UsersCollection);
+        _jwtSettings = jwtSettings.Value;
     }
 
     public async Task<bool> RegisterAsync(RegisterRequest request)
@@ -65,10 +65,10 @@ internal sealed class AuthService : IAuthService
 
     private string GenerateJwtToken(User user)
     {
-        var jwtKey = _configuration["Jwt__Secret"]
-                     ?? throw new InvalidOperationException("JWT secret not configured");
+        if (string.IsNullOrWhiteSpace(_jwtSettings.Secret))
+            throw new InvalidOperationException("JWT secret not configured");
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -79,11 +79,10 @@ internal sealed class AuthService : IAuthService
         };
 
         var token = new JwtSecurityToken(
-            issuer: "KurumArsivi",
-            audience: "KurumArsivi",
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(8),
-            signingCredentials: credentials
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
+            expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpiryHours),
+                signingCredentials: credentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
