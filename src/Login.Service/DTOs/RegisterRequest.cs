@@ -1,6 +1,6 @@
 ﻿namespace Login.Service.DTOs;
 
-internal sealed class RegisterRequest
+public sealed class RegisterRequest
 {
 
     /*Neden init: DTO'lar oluşturulduktan sonra değiştirilmemeli.

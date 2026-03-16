@@ -1,6 +1,6 @@
 ﻿namespace Login.Service.DTOs;
 
-internal sealed class LoginRequest
+public sealed class LoginRequest
 {
     /*Neden init: DTO'lar oluşturulduktan sonra değiştirilmemeli.
       init ile sadece nesne oluşturulurken set edilebilir, sonra immutable kalır. 

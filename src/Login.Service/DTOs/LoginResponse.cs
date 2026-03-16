@@ -1,6 +1,6 @@
 ﻿namespace Login.Service.DTOs;
 
-internal sealed class LoginResponse
+public sealed class LoginResponse
 {
 
     /*Neden init: DTO'lar oluşturulduktan sonra değiştirilmemeli.
