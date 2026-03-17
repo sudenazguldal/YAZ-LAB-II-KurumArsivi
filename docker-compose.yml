@@ -89,15 +89,7 @@ services:
       - internal-net
     volumes:
       - mongo-search-data:/data/db
-
-volumes:
-  mongo-dispatcher-data:
-  mongo-login-data:
-  mongo-document-data:
-  mongo-search-data:
-
-
-frontend:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -107,3 +99,11 @@ frontend:
       - public-net
     depends_on:
       - dispatcher  
+
+volumes:
+  mongo-dispatcher-data:
+  mongo-login-data:
+  mongo-document-data:
+  mongo-search-data:
+
+
