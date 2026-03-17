@@ -2,10 +2,13 @@ using Login.Service.Services;
 using Login.Service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
+
+
 
 builder.Services.Configure<MongoDbSettings>(options =>
 {
-    options.ConnectionString = builder.Configuration["MongoDB__ConnectionString"]
+    options.ConnectionString = Environment.GetEnvironmentVariable("MongoDB__ConnectionString")
                                ?? "mongodb://localhost:27017";
     options.DatabaseName = "LoginDb";
     options.UsersCollection = "users";
@@ -18,11 +21,10 @@ builder.Services.AddControllers();
 
 builder.Services.Configure<JwtSettings>(options =>
 {
-    options.Secret = builder.Configuration["Jwt__Secret"] ?? string.Empty;
-    options.Issuer = builder.Configuration["Jwt:Issuer"] ?? "KurumArsivi";
-    options.Audience = builder.Configuration["Jwt:Audience"] ?? "KurumArsivi";
-    options.ExpiryHours = int.TryParse(
-        builder.Configuration["Jwt:ExpiryHours"], out var hours) ? hours : 8;
+    options.Secret = Environment.GetEnvironmentVariable("Jwt__Secret") ?? string.Empty;
+    options.Issuer = "KurumArsivi";
+    options.Audience = "KurumArsivi";
+    options.ExpiryHours = 8;
 });
 
 var app = builder.Build();
