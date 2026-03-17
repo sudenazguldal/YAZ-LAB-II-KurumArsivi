@@ -14,14 +14,13 @@ namespace Dispatcher.API.Middlewares
         public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
-            _secretKey = configuration["Jwt__Secret"]
-                         ?? throw new InvalidOperationException("JWT secret not configured");
+            _secretKey = Environment.GetEnvironmentVariable("Jwt__Secret") ?? string.Empty;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
             // /api/login whitelist
-            if (context.Request.Path.StartsWithSegments("/api/login"))
+            if (context.Request.Path.StartsWithSegments("/api/auth"))
             {
                 await _next(context);
                 return;
