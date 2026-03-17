@@ -1,6 +1,10 @@
 using Dispatcher.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
+// HttpClient factory kaydı — RoutingMiddleware bunu kullanacak
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 //midddleware'i pipeline'a ekliyoruz. Bu, her isteğin önce AuthMiddleware tarafından işleneceği anlamına gelir.
