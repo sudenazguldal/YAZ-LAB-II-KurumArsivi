@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Document.Service.Models;
 
-public class Document
+public class DocumentFile
 {
     [BsonId] // MongoDB'deki _id
     [BsonRepresentation(BsonType.ObjectId)]
