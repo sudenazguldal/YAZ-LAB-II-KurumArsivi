@@ -109,3 +109,15 @@ async function searchDocuments() {
         results.textContent = "Sunucuya bağlanılamadı.";
     }
 }
+
+function showDocument(title, content, category, uploadedBy) {
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-content").textContent = content;
+    document.getElementById("modal-category").textContent = category;
+    document.getElementById("modal-uploadedby").textContent = uploadedBy;
+    document.getElementById("document-modal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("document-modal").style.display = "none";
+}
