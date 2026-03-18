@@ -33,10 +33,38 @@ async function login() {
     }
 }
 
+async function loadDocuments() {
+    const results = document.getElementById("search-results");
+    const token = sessionStorage.getItem("token");
+
+    try {
+        const response = await fetch(`${API_URL}/api/documents`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            results.innerHTML = data.length
+                ? data.map(d => `
+                    <div class="document-card">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <div class="document-info">
+                            <p class="document-title">${d.title}</p>
+                            <p class="document-date">${new Date(d.createdAt).toLocaleDateString("tr-TR")}</p>
+                        </div>
+                    </div>
+                `).join("")
+                : "<p class='no-result'>Belge bulunamadı.</p>";
+        }
+    } catch (error) {
+        results.textContent = "Sunucuya bağlanılamadı.";
+    }
+}
 
 function showMainPage() {
     document.getElementById("login-page").style.display = "none";
     document.getElementById("main-page").style.display = "block";
+    loadDocuments();
 }
 
 //oturum sonlandırılnca girs sayfasına yönlendirem fonk
