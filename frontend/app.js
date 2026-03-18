@@ -34,7 +34,7 @@ async function login() {
 }
 
 async function loadDocuments() {
-    const results = document.getElementById("search-results");
+     const results = document.getElementById("search-results");
     const token = sessionStorage.getItem("token");
 
     try {
@@ -46,12 +46,13 @@ async function loadDocuments() {
             const data = await response.json();
             results.innerHTML = data.length
                 ? data.map(d => `
-                    <div class="document-card">
+                    <div class="document-card" onclick="showDocument('${d.title}', '${d.content}', '${d.category}', '${d.uploadedBy}')">
                         <i class="bi bi-file-earmark-text"></i>
                         <div class="document-info">
                             <p class="document-title">${d.title}</p>
                             <p class="document-date">${new Date(d.createdAt).toLocaleDateString("tr-TR")}</p>
                         </div>
+                        <i class="bi bi-chevron-right" style="margin-left:auto;color:#2d6aad;"></i>
                     </div>
                 `).join("")
                 : "<p class='no-result'>Belge bulunamadı.</p>";
@@ -108,6 +109,18 @@ async function searchDocuments() {
     } catch (error) {
         results.textContent = "Sunucuya bağlanılamadı.";
     }
+    results.innerHTML = data.length
+    ? data.map(d => `
+        <div class="document-card" onclick="showDocument('${d.title}', '${d.content}', '${d.category}', '${d.uploadedBy}')">
+            <i class="bi bi-file-earmark-text"></i>
+            <div class="document-info">
+                <p class="document-title">${d.title}</p>
+                <p class="document-date">${d.date ? new Date(d.date).toLocaleDateString("tr-TR") : "Tarih yok"}</p>
+            </div>
+            <i class="bi bi-chevron-right" style="margin-left:auto;color:#2d6aad;"></i>
+        </div>
+    `).join("")
+    : "<p class='no-result'>Sonuç bulunamadı.</p>";
 }
 
 function showDocument(title, content, category, uploadedBy) {
