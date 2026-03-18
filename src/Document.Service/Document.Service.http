@@ -1,6 +1,15 @@
-@Document.Service_HostAddress = http://localhost:5053
+@Document.Service_HostAddress = http://localhost:5001
 
-GET {{Document.Service_HostAddress}}/weatherforecast/
-Accept: application/json
+### Tüm belgeleri getir
+GET {{Document.Service_HostAddress}}/api/document
 
-###
+### Yeni belge ekle
+POST {{Document.Service_HostAddress}}/api/document
+Content-Type: application/json
+
+{
+  "title": "Test Belgesi",
+  "content": "Bu bir test içeriğidir.",
+  "category": "Test",
+  "uploadedBy": "testuser"
+}

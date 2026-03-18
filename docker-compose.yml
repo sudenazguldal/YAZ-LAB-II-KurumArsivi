@@ -57,6 +57,8 @@ services:
     build:
       context: .
       dockerfile: src/Document.Service/Dockerfile
+    ports:
+      - "5001:8080"
     networks:
       - internal-net
     environment:
