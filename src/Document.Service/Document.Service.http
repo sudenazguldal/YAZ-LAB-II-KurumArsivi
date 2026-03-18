@@ -51,3 +51,43 @@ Authorization: {{token}}
   "category": "Tutanak",
   "uploadedBy": "testuser"
 }
+
+### Belge 4
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "title": "Bilgi Güvenliği Politikası",
+  "content": "Tüm çalışanlar şirket verilerini korumakla yükümlüdür.",
+  "category": "Politika",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 5
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "title": "Satın Alma Prosedürü",
+  "content": "500 TL üzeri alımlar için müdür onayı gerekmektedir.",
+  "category": "Prosedür",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 6
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "title": "Personel Özlük Formu",
+  "content": "Yeni işe başlayan personelin doldurması gereken form.",
+  "category": "Form",
+  "uploadedBy": "testuser"
+}
