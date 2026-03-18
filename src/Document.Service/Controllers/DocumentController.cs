@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Document.Service.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/documents")]
 public class DocumentController : ControllerBase
 {
     private readonly IDocumentService _service;

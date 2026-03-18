@@ -1,15 +1,53 @@
-@Document.Service_HostAddress = http://localhost:5001
+@Document.Service_HostAddress = http://localhost:5000
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzM4OTUyNTQsImlzcyI6Ikt1cnVtQXJzaXZpIiwiYXVkIjoiS3VydW1BcnNpdmkifQ.nTfGUrMUYwE_WSKvsNvCMytX1D1-poCsdGG8HAtOUBA
 
 ### Tüm belgeleri getir
-GET {{Document.Service_HostAddress}}/api/document
-
+GET {{Document.Service_HostAddress}}/api/documents
+Authorization: {{token}}
 ### Yeni belge ekle
-POST {{Document.Service_HostAddress}}/api/document
+POST {{Document.Service_HostAddress}}/api/documents
 Content-Type: application/json
-
+Authorization: {{token}}
 {
   "title": "Test Belgesi",
   "content": "Bu bir test içeriğidir.",
   "category": "Test",
+  "uploadedBy": "testuser"
+}
+
+### Belge 1
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "Şirket Yönetmeliği",
+  "content": "Şirket çalışma saatleri 09:00-18:00 arasındadır.",
+  "category": "Yönetmelik",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 2
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "İzin Talep Formu",
+  "content": "Yıllık izin talepleri en az 3 gün öncesinden yapılmalıdır.",
+  "category": "Form",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 3
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "Toplantı Tutanağı",
+  "content": "Mart ayı toplantısında yeni proje planları görüşüldü.",
+  "category": "Tutanak",
   "uploadedBy": "testuser"
 }
