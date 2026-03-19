@@ -13,16 +13,13 @@ namespace Dispatcher.Tests
     public class AuthTests
     {
 
-        private AuthMiddleware CreateMiddleware(string? secret = "bu-cok-gizli-bir-anahtar-en-az-32-karakter")
+        private AuthMiddleware CreateMiddleware(RequestDelegate? next = null)
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
-                {
-            { "Jwt__Secret", secret }
-                })
-                .Build();
+            Environment.SetEnvironmentVariable("Jwt__Secret",
+                "bu-cok-gizli-bir-anahtar-en-az-32-karakter");
 
-            return new AuthMiddleware(_ => Task.CompletedTask, config);
+            var config = new ConfigurationBuilder().Build();
+            return new AuthMiddleware(next ?? (_ => Task.CompletedTask), config);
         }
 
 
@@ -60,7 +57,7 @@ namespace Dispatcher.Tests
         {
             // Arrange
             var context = new DefaultHttpContext();
-            context.Request.Path = "/api/login";
+            context.Request.Path = "/api/auth/login";
        
 
             var middleware = CreateMiddleware();
@@ -132,7 +129,11 @@ namespace Dispatcher.Tests
             var nextCalled = false;
             var context = new DefaultHttpContext();
 
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("bu-cok-gizli-bir-anahtar-en-az-32-karakter"));
+            // Environment variable'ı set et
+            Environment.SetEnvironmentVariable("Jwt__Secret", "bu-cok-gizli-bir-anahtar-en-az-32-karakter");
+
+            var key = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes("bu-cok-gizli-bir-anahtar-en-az-32-karakter"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
                 expires: DateTime.UtcNow.AddHours(1),
@@ -140,13 +141,11 @@ namespace Dispatcher.Tests
             ));
 
             context.Request.Headers["Authorization"] = $"Bearer {token}";
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
-                  {
-                      { "Jwt__Secret", "bu-cok-gizli-bir-anahtar-en-az-32-karakter" }
-                  })
-                .Build();
-            var middleware = new AuthMiddleware(_ => { nextCalled = true; return Task.CompletedTask; }, config);
+
+            var config = new ConfigurationBuilder().Build();
+            var middleware = new AuthMiddleware(
+                _ => { nextCalled = true; return Task.CompletedTask; },
+                config);
 
             await middleware.InvokeAsync(context);
             Assert.That(nextCalled, Is.True);

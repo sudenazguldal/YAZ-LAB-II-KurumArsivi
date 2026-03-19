@@ -41,14 +41,12 @@ namespace Dispatcher.Tests
     {
         private RoutingMiddleware CreateMiddleware(RequestDelegate? next = null)
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    { "LoginService__Url", "http://login-service:8080" },
-                    { "DocumentService__Url", "http://document-service:8080" },
-                    { "SearchService__Url", "http://search-service:8080" }
-                })
-                .Build();
+            // Environment variable'ları test için set et
+            Environment.SetEnvironmentVariable("LoginService__Url", "http://login-service:8080");
+            Environment.SetEnvironmentVariable("DocumentService__Url", "http://document-service:8080");
+            Environment.SetEnvironmentVariable("SearchService__Url", "http://search-service:8080");
+
+            var config = new ConfigurationBuilder().Build();
 
             var handler = new MockHttpMessageHandler(_ =>
                 new HttpResponseMessage(HttpStatusCode.OK)
