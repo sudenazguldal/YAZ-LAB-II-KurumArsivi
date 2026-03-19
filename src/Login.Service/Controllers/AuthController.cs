@@ -1,4 +1,6 @@
-﻿using Login.Service.DTOs;
+﻿using DnsClient;
+using Login.Service.DTOs;
+using Login.Service.Models;
 using Login.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,5 +65,42 @@ public sealed class AuthController : ControllerBase
 
         var users = await _authService.GetAllUsersAsync();
         return Ok(users);
+    }
+
+
+    // Kullanıcı sil — sadece admin
+    [HttpDelete("users/{username}")]
+    public async Task<IActionResult> DeleteUser(string username)
+    {
+        var role = HttpContext.Request.Headers["X-User-Role"].ToString();
+        if (role != "admin")
+            return StatusCode(403, new { message = "Only admins can delete users" });
+
+        if (username == "admin")
+            return BadRequest(new { message = "Cannot delete admin user" });
+
+        var success = await _authService.DeleteUserAsync(username);
+        if (!success)
+            return NotFound(new { message = "User not found" });
+
+        return Ok(new { message = "User deleted successfully" });
+    }
+
+    // Rol güncelle — sadece admin
+    [HttpPut("users/{username}/role")]
+    public async Task<IActionResult> UpdateUserRole(string username, [FromBody] UpdateRoleRequest request)
+    {
+        var role = HttpContext.Request.Headers["X-User-Role"].ToString();
+        if (role != "admin")
+            return StatusCode(403, new { message = "Only admins can update roles" });
+
+        if (username == "admin")
+            return BadRequest(new { message = "Cannot change admin role" });
+
+        var success = await _authService.UpdateUserRoleAsync(username, request.Role);
+        if (!success)
+            return NotFound(new { message = "User not found or invalid role" });
+
+        return Ok(new { message = "Role updated successfully" });
     }
 }

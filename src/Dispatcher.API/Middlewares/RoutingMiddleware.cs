@@ -15,8 +15,7 @@ namespace Dispatcher.API.Middlewares
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
 
-            Console.WriteLine($"Constructor - LoginService__Url: '{configuration["LoginService__Url"]}'");
-            Console.WriteLine($"Constructor - ENV: '{Environment.GetEnvironmentVariable("LoginService__Url")}'");
+          
         }
 
         public async Task InvokeAsync(HttpContext context)

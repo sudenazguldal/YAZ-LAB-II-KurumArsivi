@@ -68,10 +68,7 @@ namespace Dispatcher.API.Middlewares
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(jwtToken);
 
-            foreach (var claim in jwt.Claims)
-            {
-                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
-            } 
+
 
             var userRole = jwt.Claims
     .FirstOrDefault(c => c.Type == ClaimTypes.Role
@@ -79,7 +76,7 @@ namespace Dispatcher.API.Middlewares
                       || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
     ?.Value ?? "";
 
-            Console.WriteLine($"UserRole from token: '{userRole}'");
+
 
             // Headers readonly olabilir, farklı yöntem dene
             context.Items["UserRole"] = userRole;

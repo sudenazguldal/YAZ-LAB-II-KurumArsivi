@@ -8,4 +8,7 @@ public interface IAuthService
     Task<bool> RegisterAsync(RegisterRequest request);
     Task SeedAdminAsync();
     Task<List<UserDto>> GetAllUsersAsync();
+
+    Task<bool> DeleteUserAsync(string username);
+    Task<bool> UpdateUserRoleAsync(string username, string role);
 }

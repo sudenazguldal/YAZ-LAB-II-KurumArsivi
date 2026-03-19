@@ -109,4 +109,21 @@ internal sealed class AuthService : IAuthService
         var users = await _users.Find(_ => true).ToListAsync();
         return users.Select(u => new UserDto(u.Username, u.Role)).ToList();
     }
+
+
+    public async Task<bool> DeleteUserAsync(string username)
+    {
+        var result = await _users.DeleteOneAsync(u => u.Username == username);
+        return result.DeletedCount > 0;
+    }
+
+    public async Task<bool> UpdateUserRoleAsync(string username, string role)
+    {
+        if (role != "admin" && role != "user")
+            return false;
+
+        var update = Builders<User>.Update.Set(u => u.Role, role);
+        var result = await _users.UpdateOneAsync(u => u.Username == username, update);
+        return result.ModifiedCount > 0;
+    }
 }
