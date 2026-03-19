@@ -16,3 +16,34 @@ Content-Type: application/json
   "password": "Test123!"
 }
 
+### Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### Admin ile kullanıcı ekle
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJhZG1pbiIsImp0aSI6IjIwZjNkYTliLWNjMDAtNDE2Yi04YmY0LTVmNWVjN2M3MTFhZCIsImV4cCI6MTc3Mzk0NTE1MiwiaXNzIjoiS3VydW1BcnNpdmkiLCJhdWQiOiJLdXJ1bUFyc2l2aSJ9.U0U_LuKhN2ZybF1biSoH182RnB7YJUOFxfAKQTrSy0c
+
+{
+  "username": "newuser",
+  "password": "Test123!",
+  "role": "user"
+}
+
+### Admin ekle
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+Authorization: Bearer <admin_token>
+
+{
+  "username": "newadmin",
+  "password": "Test123!",
+  "role": "admin"
+}
+

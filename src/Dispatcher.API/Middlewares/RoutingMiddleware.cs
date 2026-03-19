@@ -69,6 +69,8 @@ namespace Dispatcher.API.Middlewares
                 RequestUri = new Uri(targetUrl)
             };
 
+
+
             // Body kopyala
             if (context.Request.ContentLength > 0 || context.Request.ContentType != null)
             {
@@ -80,6 +82,12 @@ namespace Dispatcher.API.Middlewares
                 if (context.Request.ContentType != null)
                     requestMessage.Content.Headers.ContentType =
                         MediaTypeHeaderValue.Parse(context.Request.ContentType);
+            }
+
+            // UserRole'ü Items'dan al ve header olarak ekle
+            if (context.Items.TryGetValue("UserRole", out var userRole) && userRole != null)
+            {
+                requestMessage.Headers.TryAddWithoutValidation("X-User-Role", userRole.ToString());
             }
 
             // Header'ları kopyala

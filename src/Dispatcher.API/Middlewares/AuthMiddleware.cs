@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace Dispatcher.API.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             // /api/login whitelist
-            if (context.Request.Path.StartsWithSegments("/api/auth"))
+            if (context.Request.Path.StartsWithSegments("/api/auth/login"))
             {
                 await _next(context);
                 return;
@@ -62,8 +63,30 @@ namespace Dispatcher.API.Middlewares
                 await context.Response.WriteAsync("Invalid or expired token.");
                 return;
             }
-           
+
+            // Token'dan role'ü oku ve header'a ekle
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(jwtToken);
+
+            foreach (var claim in jwt.Claims)
+            {
+                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
+            } 
+
+            var userRole = jwt.Claims
+    .FirstOrDefault(c => c.Type == ClaimTypes.Role
+                      || c.Type == "role"
+                      || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+    ?.Value ?? "";
+
+            Console.WriteLine($"UserRole from token: '{userRole}'");
+
+            // Headers readonly olabilir, farklı yöntem dene
+            context.Items["UserRole"] = userRole;
+
             await _next(context);
+
+  
         } 
 
         private bool ValidateToken(string token)
