@@ -38,7 +38,7 @@ internal sealed class AuthService : IAuthService
         {
             Username = request.Username,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = "user"
+            Role = request.Role == "admin" ? "admin" : "user" // sadece admin/user kabul et
         };
 
         await _users.InsertOneAsync(user);
@@ -56,11 +56,7 @@ internal sealed class AuthService : IAuthService
 
         var token = GenerateJwtToken(user);
 
-        return new LoginResponse
-        {
-            Token = token,
-            Username = user.Username
-        };
+        return new LoginResponse(token, user.Username, user.Role);
     }
 
     private string GenerateJwtToken(User user)
@@ -81,10 +77,36 @@ internal sealed class AuthService : IAuthService
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
+            claims: claims,
             expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpiryHours),
-                signingCredentials: credentials
+            signingCredentials: credentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task SeedAdminAsync()
+    {
+        var existing = await _users
+            .Find(u => u.Username == "admin")
+            .FirstOrDefaultAsync();
+
+        if (existing != null) return;
+
+        var admin = new User
+        {
+            Username = "admin",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
+            Role = "admin"
+        };
+
+        await _users.InsertOneAsync(admin);
+        Console.WriteLine("Admin user created.");
+    }
+
+    public async Task<List<UserDto>> GetAllUsersAsync()
+    {
+        var users = await _users.Find(_ => true).ToListAsync();
+        return users.Select(u => new UserDto(u.Username, u.Role)).ToList();
     }
 }

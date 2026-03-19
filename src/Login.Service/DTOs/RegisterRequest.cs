@@ -8,4 +8,6 @@ public sealed class RegisterRequest
       DTO’lar oluşturulduktan sonra değiştirilmeyecek veri taşıyıcıları olarak tasarlandı.*/
     public string Username { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
+
+    public string Role { get; init; } = "user"; // varsayılan user
 }

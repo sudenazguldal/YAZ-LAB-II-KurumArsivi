@@ -29,5 +29,12 @@ builder.Services.Configure<JwtSettings>(options =>
 
 var app = builder.Build();
 
+//admin seed
+using (var scope = app.Services.CreateScope())
+{
+    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+    await authService.SeedAdminAsync();
+}
+
 app.MapControllers();
 app.Run();
