@@ -31,7 +31,11 @@ namespace Dispatcher.API.Middlewares
                 return;
             }
 
-            await ForwardRequestAsync(context, targetBaseUrl + path);
+            var targetUrl = targetBaseUrl + path;
+            if (context.Request.QueryString.HasValue)
+                targetUrl += context.Request.QueryString.Value;
+
+            await ForwardRequestAsync(context, targetUrl);
         }
 
         private string? ResolveTargetService(string path)
