@@ -1,5 +1,5 @@
 @Document.Service_HostAddress = http://localhost:5000
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzM4OTUyNTQsImlzcyI6Ikt1cnVtQXJzaXZpIiwiYXVkIjoiS3VydW1BcnNpdmkifQ.nTfGUrMUYwE_WSKvsNvCMytX1D1-poCsdGG8HAtOUBA
+@token = Bearer 
 
 ### Tüm belgeleri getir
 GET {{Document.Service_HostAddress}}/api/documents

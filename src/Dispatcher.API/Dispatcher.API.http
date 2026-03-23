@@ -1,11 +1,4 @@
-### Register
-POST http://localhost:5000/api/auth/register
-Content-Type: application/json
-
-{
-  "username": "testuser",
-  "password": "Test123!"
-}
+@token = Bearer
 
 ### Login
 POST http://localhost:5000/api/auth/login
@@ -28,10 +21,9 @@ Content-Type: application/json
 ### Admin ile kullanıcı ekle
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJhZG1pbiIsImp0aSI6IjIwZjNkYTliLWNjMDAtNDE2Yi04YmY0LTVmNWVjN2M3MTFhZCIsImV4cCI6MTc3Mzk0NTE1MiwiaXNzIjoiS3VydW1BcnNpdmkiLCJhdWQiOiJLdXJ1bUFyc2l2aSJ9.U0U_LuKhN2ZybF1biSoH182RnB7YJUOFxfAKQTrSy0c
-
+Authorization: {{token}}
 {
-  "username": "newuser",
+  "username": "sude",
   "password": "Test123!",
   "role": "user"
 }
@@ -39,7 +31,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hc
 ### Admin ekle
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
-Authorization: Bearer <admin_token>
+Authorization: {{token}}
 
 {
   "username": "newadmin",
@@ -47,3 +39,21 @@ Authorization: Bearer <admin_token>
   "role": "admin"
 }
 
+
+### Kullanıcı listesi — admin token ile
+GET http://localhost:5000/api/auth/users
+Authorization: {{token}}
+
+
+### Kullanıcı sil — admin token ile
+DELETE http://localhost:5000/api/auth/users/testuser1
+Authorization: {{token}}
+
+### Rol güncelle — admin token ile
+PUT http://localhost:5000/api/auth/users/sude/role
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "role": "admin"
+}
