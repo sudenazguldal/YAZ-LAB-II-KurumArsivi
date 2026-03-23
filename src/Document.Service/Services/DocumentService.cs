@@ -59,7 +59,15 @@ public class DocumentService : IDocumentService
     {
         try
         {
-            await _httpClient.PostAsJsonAsync("/api/search", document);
+            var indexRequest = new
+            {
+                documentId = document.Id,
+                title = document.Title,
+                content = document.Content,
+                tags = new[] { document.Category }
+            };
+
+            await _httpClient.PostAsJsonAsync("/api/search/index", indexRequest);
         }
         catch
         {
