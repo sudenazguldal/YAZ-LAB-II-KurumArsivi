@@ -9,40 +9,90 @@
 </head>
 <body>
     <div id="admin-page">
-        <h1><i class="bi bi-shield-lock-fill"></i> Admin Paneli
+        <!-- Header -->
+        <div class="admin-header">
+            <div>
+                <h1><i class="bi bi-shield-lock-fill"></i> Admin Paneli</h1>
+                <p class="admin-welcome">Hoş geldiniz, <span id="admin-username"></span>!</p>
+            </div>
+            
+          <div style="display:flex;gap:10px;">
+            <button class="logout-btn" onclick="window.location.href='index.html'">
+              <i class="bi bi-search"></i> Arşive Git
+            </button>
             <button class="logout-btn" onclick="adminLogout()">
-                <i class="bi bi-box-arrow-right"></i> Çıkış
+              <i class="bi bi-box-arrow-right"></i> Çıkış
             </button>
-        </h1>
-
-        <!-- Kullanıcı Ekle -->
-        <div class="admin-card">
-            <h2><i class="bi bi-person-plus-fill"></i> Kullanıcı Ekle</h2>
-            <div class="input-group">
-                <label>Kullanıcı Adı</label>
-                <input type="text" id="new-username" placeholder="Kullanıcı adı girin" />
-            </div>
-            <div class="input-group">
-                <label>Şifre</label>
-                <input type="password" id="new-password" placeholder="Şifre girin" />
-            </div>
-            <div class="input-group">
-                <label>Rol</label>
-                <select id="new-role">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <button class="login-btn" onclick="addUser()">
-                <i class="bi bi-plus-circle"></i> Ekle
-            </button>
-            <p id="add-message"></p>
+          </div>
         </div>
 
-        <!-- Kullanıcı Listesi -->
-        <div class="admin-card">
-            <h2><i class="bi bi-people-fill"></i> Kullanıcılar</h2>
-            <div id="user-list"></div>
+        <!-- Sekmeler -->
+        <div class="tab-container">
+            <button class="tab-btn active" id="tab-users" onclick="switchTab('users')">
+                <i class="bi bi-people-fill"></i> Kullanıcı Yönetimi
+            </button>
+            <button class="tab-btn" id="tab-docs" onclick="switchTab('docs')">
+                <i class="bi bi-file-earmark-text-fill"></i> Doküman Yönetimi
+            </button>
+        </div>
+
+        <!-- Kullanıcı Yönetimi -->
+        <div id="panel-users">
+            <div class="admin-card">
+                <h2><i class="bi bi-person-plus-fill"></i> Kullanıcı Ekle</h2>
+                <div class="input-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" id="new-username" placeholder="Kullanıcı adı girin" />
+                </div>
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" id="new-password" placeholder="Şifre girin" />
+                </div>
+                <div class="input-group">
+                    <label>Rol</label>
+                    <select id="new-role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button class="login-btn" onclick="addUser()">
+                    <i class="bi bi-plus-circle"></i> Ekle
+                </button>
+                <p id="add-message"></p>
+            </div>
+
+            <div class="admin-card">
+                <h2><i class="bi bi-people-fill"></i> Kullanıcılar</h2>
+                <div id="user-list"></div>
+            </div>
+        </div>
+
+        <!-- Doküman Yönetimi -->
+        <div id="panel-docs" style="display:none;">
+            <div class="admin-card">
+                <h2><i class="bi bi-file-earmark-plus-fill"></i> Doküman Ekle</h2>
+                <div class="input-group">
+                    <label>Başlık</label>
+                    <input type="text" id="doc-title" placeholder="Doküman başlığı" />
+                </div>
+                <div class="input-group">
+                    <label>İçerik</label>
+                    <textarea id="doc-content" placeholder="Doküman içeriği" rows="3" style="width:100%;padding:12px 16px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;outline:none;resize:vertical;"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Kategori</label>
+                    <input type="text" id="doc-category" placeholder="Kategori girin" />
+                </div>
+                <button class="login-btn" onclick="addDocument()">
+                    <i class="bi bi-plus-circle"></i> Ekle
+                </button>
+                <p id="doc-message"></p>
+            </div>
+
+            <div class="admin-card">
+                <h2><i class="bi bi-file-earmark-text-fill"></i> Dokümanlar</h2>
+                <div id="doc-list"></div>
+            </div>
         </div>
     </div>
 

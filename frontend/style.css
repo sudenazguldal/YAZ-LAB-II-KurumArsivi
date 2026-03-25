@@ -316,4 +316,51 @@ button.logout-btn {
     background: #c0392b;
     color: white;
 }
+/* Admin Header */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
 
+.admin-welcome {
+    color: #2d6aad;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.admin-welcome span {
+    font-weight: 700;
+}
+
+/* Sekmeler */
+.tab-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    color: #888;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    border-color: #2d6aad;
+    color: #2d6aad;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #1a3a6b, #2d6aad);
+    color: white;
+    border-color: transparent;
+}
