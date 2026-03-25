@@ -20,10 +20,18 @@ async function login() {
         });
 
         if (response.ok) {
-            const data = await response.json();
-            sessionStorage.setItem("token", data.token);
-            showMainPage();
-        } else {
+         const data = await response.json();
+         sessionStorage.setItem("token", data.token);
+         sessionStorage.setItem("role", data.role);
+         sessionStorage.setItem("username", data.username);
+
+           if (data.role === "admin") {
+            window.location.href = "admin.html";
+           } else {
+         showMainPage();
+         }
+        }
+        else {
             message.style.color = "red";
             message.textContent = "Kullanıcı adı veya şifre hatalı.";
         }
@@ -109,18 +117,6 @@ async function searchDocuments() {
     } catch (error) {
         results.textContent = "Sunucuya bağlanılamadı.";
     }
-    results.innerHTML = data.length
-    ? data.map(d => `
-        <div class="document-card" onclick="showDocument('${d.title}', '${d.content}', '${d.category}', '${d.uploadedBy}')">
-            <i class="bi bi-file-earmark-text"></i>
-            <div class="document-info">
-                <p class="document-title">${d.title}</p>
-                <p class="document-date">${d.date ? new Date(d.date).toLocaleDateString("tr-TR") : "Tarih yok"}</p>
-            </div>
-            <i class="bi bi-chevron-right" style="margin-left:auto;color:#2d6aad;"></i>
-        </div>
-    `).join("")
-    : "<p class='no-result'>Sonuç bulunamadı.</p>";
 }
 
 function showDocument(title, content, category, uploadedBy) {
