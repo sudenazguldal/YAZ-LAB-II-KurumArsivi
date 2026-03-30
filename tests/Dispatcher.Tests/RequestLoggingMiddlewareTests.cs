@@ -127,5 +127,36 @@ namespace Dispatcher.Tests
             var log = logger.Logs[0];
             Assert.That(log, Does.Contain("sudenaz"));
         }
+
+
+        [Test]
+        public async Task InvokeAsync_ShouldWriteDuration_WhenRequestCompletes()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/documents";
+            context.Request.Method = "GET";
+            context.Items["TargetService"] = "document-service";
+            context.Items["Username"] = "sudenaz";
+
+            var logger = new TestLogger<RequestLoggingMiddleware>();
+
+            var middleware = new RequestLoggingMiddleware(
+                async ctx =>
+                {
+                    ctx.Response.StatusCode = 200;
+                    await Task.Delay(10);
+                },
+                logger);
+
+            // Act
+            await middleware.InvokeAsync(context);
+
+            // Assert
+            Assert.That(logger.Logs.Count, Is.EqualTo(1));
+
+            var log = logger.Logs[0];
+            Assert.That(log, Does.Contain("DurationMs"));
+        }
     }
 }
