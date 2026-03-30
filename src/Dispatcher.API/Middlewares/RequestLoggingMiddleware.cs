@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace Dispatcher.API.Middlewares
 {
@@ -20,12 +20,18 @@ namespace Dispatcher.API.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             var stopwatch = Stopwatch.StartNew();
+            Exception? exception = null;
 
             try
             {
                 await _next(context);
             }
             catch (Exception ex)
+            {
+                exception = ex;
+                throw;
+            }
+            finally
             {
                 stopwatch.Stop();
 
@@ -43,43 +49,30 @@ namespace Dispatcher.API.Middlewares
 
                 var durationMs = stopwatch.ElapsedMilliseconds;
 
-                _logger.LogError(
-                    ex,
-                    "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username} DurationMs={DurationMs}",
-                    route,
-                    method,
-                    statusCode,
-                    targetService,
-                    username,
-                    durationMs);
-
-                throw;
+                if (exception == null)
+                {
+                    _logger.LogInformation(
+                        "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username} DurationMs={DurationMs}",
+                        route,
+                        method,
+                        statusCode,
+                        targetService,
+                        username,
+                        durationMs);
+                }
+                else
+                {
+                    _logger.LogError(
+                        exception,
+                        "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username} DurationMs={DurationMs}",
+                        route,
+                        method,
+                        statusCode,
+                        targetService,
+                        username,
+                        durationMs);
+                }
             }
-
-            stopwatch.Stop();
-
-            var successRoute = context.Request.Path.Value ?? "/";
-            var successMethod = context.Request.Method;
-            var successStatusCode = context.Response.StatusCode;
-
-            var successTargetService = context.Items.TryGetValue("TargetService", out var successTarget)
-                ? successTarget?.ToString() ?? "unknown"
-                : "unknown";
-
-            var successUsername = context.Items.TryGetValue("Username", out var successUser)
-                ? successUser?.ToString() ?? "anonymous"
-                : "anonymous";
-
-            var successDurationMs = stopwatch.ElapsedMilliseconds;
-
-            _logger.LogInformation(
-                "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username} DurationMs={DurationMs}",
-                successRoute,
-                successMethod,
-                successStatusCode,
-                successTargetService,
-                successUsername,
-                successDurationMs);
         }
     }
 }
