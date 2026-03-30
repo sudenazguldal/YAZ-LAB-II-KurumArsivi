@@ -96,5 +96,36 @@ namespace Dispatcher.Tests
             Assert.That(log, Does.Contain("404"));
             Assert.That(log, Does.Contain("unknown"));
         }
+
+        [Test]
+        public async Task InvokeAsync_ShouldWriteUsername_WhenUsernameExistsInContextItems()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/documents";
+            context.Request.Method = "GET";
+            context.Response.StatusCode = 200;
+            context.Items["TargetService"] = "document-service";
+            context.Items["Username"] = "sudenaz";
+
+            var logger = new TestLogger<RequestLoggingMiddleware>();
+
+            var middleware = new RequestLoggingMiddleware(
+                async ctx =>
+                {
+                    ctx.Response.StatusCode = 200;
+                    await Task.CompletedTask;
+                },
+                logger);
+
+            // Act
+            await middleware.InvokeAsync(context);
+
+            // Assert
+            Assert.That(logger.Logs.Count, Is.EqualTo(1));
+
+            var log = logger.Logs[0];
+            Assert.That(log, Does.Contain("sudenaz"));
+        }
     }
 }
