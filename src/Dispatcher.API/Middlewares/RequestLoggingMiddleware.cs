@@ -28,12 +28,17 @@ namespace Dispatcher.API.Middlewares
                 ? target?.ToString() ?? "unknown"
                 : "unknown";
 
+            var username = context.Items.TryGetValue("Username", out var user)
+                ? user?.ToString() ?? "anonymous"
+                : "anonymous";
+
             _logger.LogInformation(
-                "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService}",
+                "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username}",
                 route,
                 method,
                 statusCode,
-                targetService);
+                targetService,
+                username);
         }
     }
 }
