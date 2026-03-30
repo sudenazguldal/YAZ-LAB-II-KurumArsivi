@@ -23,6 +23,8 @@ namespace Dispatcher.API.Middlewares
             // /api/login whitelist
             if (context.Request.Path.StartsWithSegments("/api/auth/login"))
             {
+                context.Items["Username"] = "anonymous";
+                context.Items["UserRole"] = "anonymous";
                 await _next(context);
                 return;
             }
@@ -76,15 +78,21 @@ namespace Dispatcher.API.Middlewares
                       || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
     ?.Value ?? "";
 
-
+            var username = jwt.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Name
+                                  || c.Type == "unique_name"
+                                  || c.Type == "name"
+                                  || c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")
+                ?.Value ?? "unknown";
 
             // Headers readonly olabilir, farklı yöntem dene
             context.Items["UserRole"] = userRole;
+            context.Items["Username"] = username;
 
             await _next(context);
 
   
-        } 
+        }
 
         private bool ValidateToken(string token)
         {
@@ -105,8 +113,9 @@ namespace Dispatcher.API.Middlewares
             }
             catch
             {
-                return false; // İmza geçersiz → 401
+                return false;
             }
         }
+
     }
 }

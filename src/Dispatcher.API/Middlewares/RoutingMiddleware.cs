@@ -14,13 +14,14 @@ namespace Dispatcher.API.Middlewares
             _next = next;
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
-
-          
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
             var path = context.Request.Path.Value ?? "";
+
+            string targetService = ResolveTargetServiceName(path);
+            context.Items["TargetService"] = targetService;
 
             string? targetBaseUrl = ResolveTargetService(path);
 
@@ -32,18 +33,29 @@ namespace Dispatcher.API.Middlewares
             }
 
             var targetUrl = targetBaseUrl + path;
+
             if (context.Request.QueryString.HasValue)
                 targetUrl += context.Request.QueryString.Value;
 
             await ForwardRequestAsync(context, targetUrl);
         }
 
+        private string ResolveTargetServiceName(string path)
+        {
+            if (path.StartsWith("/api/auth"))
+                return "login-service";
+
+            if (path.StartsWith("/api/documents"))
+                return "document-service";
+
+            if (path.StartsWith("/api/search"))
+                return "search-service";
+
+            return "unknown";
+        }
+
         private string? ResolveTargetService(string path)
         {
-            Console.WriteLine($"PATH RECEIVED: '{path}'");
-        
-            string? url = null;
-
             if (path.StartsWith("/api/auth"))
                 return Environment.GetEnvironmentVariable("LoginService__Url");
 
@@ -53,13 +65,7 @@ namespace Dispatcher.API.Middlewares
             if (path.StartsWith("/api/search"))
                 return Environment.GetEnvironmentVariable("SearchService__Url");
 
-            Console.WriteLine($"LoginService__Url: '{_configuration["LoginService__Url"]}'");
-
             return null;
-
- 
-
-
         }
 
         private async Task ForwardRequestAsync(HttpContext context, string targetUrl)
@@ -72,8 +78,6 @@ namespace Dispatcher.API.Middlewares
                 RequestUri = new Uri(targetUrl)
             };
 
-
-
             // Body kopyala
             if (context.Request.ContentLength > 0 || context.Request.ContentType != null)
             {
@@ -82,12 +86,15 @@ namespace Dispatcher.API.Middlewares
                 memoryStream.Position = 0;
 
                 requestMessage.Content = new StreamContent(memoryStream);
+
                 if (context.Request.ContentType != null)
+                {
                     requestMessage.Content.Headers.ContentType =
                         MediaTypeHeaderValue.Parse(context.Request.ContentType);
+                }
             }
 
-            // UserRole'ü Items'dan al ve header olarak ekle
+            // UserRole header ekle
             if (context.Items.TryGetValue("UserRole", out var userRole) && userRole != null)
             {
                 requestMessage.Headers.TryAddWithoutValidation("X-User-Role", userRole.ToString());
@@ -96,34 +103,60 @@ namespace Dispatcher.API.Middlewares
             // Header'ları kopyala
             foreach (var header in context.Request.Headers)
             {
-                // Content- ile başlayanları ve Host'u atlıyoruz
                 if (header.Key.StartsWith("Content-", StringComparison.OrdinalIgnoreCase))
                     continue;
+
                 if (header.Key.Equals("Host", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
             }
+
             try
             {
                 var response = await client.SendAsync(requestMessage);
+
                 context.Response.StatusCode = (int)response.StatusCode;
-                context.Response.ContentType = "application/json";
+
+                // 204 No Content ise body yazmadan çık
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    return;
+                }
+
+                // Content-Type varsa taşı
+                if (response.Content.Headers.ContentType != null)
+                {
+                    context.Response.ContentType = response.Content.Headers.ContentType.ToString();
+                }
+
                 var responseBody = await response.Content.ReadAsStringAsync();
-                await context.Response.WriteAsync(responseBody);
+
+                if (!string.IsNullOrWhiteSpace(responseBody))
+                {
+                    await context.Response.WriteAsync(responseBody);
+                }
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"HttpRequestException: {ex.Message}");
                 Console.WriteLine($"Inner: {ex.InnerException?.Message}");
-                context.Response.StatusCode = 503;
-                await context.Response.WriteAsync("Service unavailable.");
+
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = 503;
+                    await context.Response.WriteAsync("Service unavailable.");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception: {ex.Message}");
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Internal error.");
+
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsync("Internal error.");
+                }
             }
         }
     }

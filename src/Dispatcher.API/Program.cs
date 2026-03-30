@@ -24,6 +24,7 @@ var app = builder.Build();
 app.UseCors();
 //midddleware'i pipeline'a ekliyoruz. Bu, her isteğin önce AuthMiddleware tarafından işleneceği anlamına gelir.
 //önce auth kontrolü yapacağız, sonra yönlendirme yapacağız. Bu sırayla ekliyoruz.
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<AuthMiddleware>();
 app.UseMiddleware<RoutingMiddleware>();
 
