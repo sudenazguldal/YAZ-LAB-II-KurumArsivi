@@ -8,6 +8,7 @@ namespace Dispatcher.Tests
     public class TestLogger<T> : ILogger<T>
     {
         public List<string> Logs { get; } = new();
+        public List<LogLevel> LogLevels { get; } = new();
 
         public IDisposable BeginScope<TState>(TState state) => NullScope.Instance;
 
@@ -20,6 +21,7 @@ namespace Dispatcher.Tests
             Exception? exception,
             Func<TState, Exception?, string> formatter)
         {
+            LogLevels.Add(logLevel);
             Logs.Add(formatter(state, exception));
         }
 
@@ -157,6 +159,37 @@ namespace Dispatcher.Tests
 
             var log = logger.Logs[0];
             Assert.That(log, Does.Contain("DurationMs"));
+        }
+
+        [Test]
+        public void InvokeAsync_ShouldWriteErrorLog_WhenExceptionIsThrown()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/documents";
+            context.Request.Method = "GET";
+            context.Items["TargetService"] = "document-service";
+            context.Items["Username"] = "sudenaz";
+
+            var logger = new TestLogger<RequestLoggingMiddleware>();
+
+            var middleware = new RequestLoggingMiddleware(
+                ctx =>
+                {
+                    throw new InvalidOperationException("Test exception");
+                },
+                logger);
+
+            // Act + Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await middleware.InvokeAsync(context));
+
+            Assert.That(logger.Logs.Count, Is.EqualTo(1));
+            Assert.That(logger.LogLevels[0], Is.EqualTo(LogLevel.Error));
+
+            var log = logger.Logs[0];
+            Assert.That(log, Does.Contain("/api/documents"));
+            Assert.That(log, Does.Contain("GET"));
         }
     }
 }
