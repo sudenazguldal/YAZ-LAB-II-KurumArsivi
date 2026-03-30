@@ -64,5 +64,37 @@ namespace Dispatcher.Tests
             Assert.That(log, Does.Contain("200"));
             Assert.That(log, Does.Contain("document-service"));
         }
+
+        [Test]
+        public async Task InvokeAsync_ShouldWriteLog_WhenRequestReturns404()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Path = "/api/unknown";
+            context.Request.Method = "GET";
+            context.Items["TargetService"] = "unknown";
+
+            var logger = new TestLogger<RequestLoggingMiddleware>();
+
+            var middleware = new RequestLoggingMiddleware(
+                async ctx =>
+                {
+                    ctx.Response.StatusCode = 404;
+                    await Task.CompletedTask;
+                },
+                logger);
+
+            // Act
+            await middleware.InvokeAsync(context);
+
+            // Assert
+            Assert.That(logger.Logs.Count, Is.EqualTo(1));
+
+            var log = logger.Logs[0];
+            Assert.That(log, Does.Contain("/api/unknown"));
+            Assert.That(log, Does.Contain("GET"));
+            Assert.That(log, Does.Contain("404"));
+            Assert.That(log, Does.Contain("unknown"));
+        }
     }
 }
