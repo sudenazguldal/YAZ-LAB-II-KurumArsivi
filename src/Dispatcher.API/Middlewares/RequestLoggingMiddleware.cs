@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Dispatcher.API.Middlewares
 {
@@ -18,7 +19,11 @@ namespace Dispatcher.API.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             await _next(context);
+
+            stopwatch.Stop();
 
             var route = context.Request.Path.Value ?? "/";
             var method = context.Request.Method;
@@ -32,13 +37,16 @@ namespace Dispatcher.API.Middlewares
                 ? user?.ToString() ?? "anonymous"
                 : "anonymous";
 
+            var durationMs = stopwatch.ElapsedMilliseconds;
+
             _logger.LogInformation(
-                "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username}",
+                "Route={Route} Method={Method} StatusCode={StatusCode} TargetService={TargetService} Username={Username} DurationMs={DurationMs}",
                 route,
                 method,
                 statusCode,
                 targetService,
-                username);
+                username,
+                durationMs);
         }
     }
 }
