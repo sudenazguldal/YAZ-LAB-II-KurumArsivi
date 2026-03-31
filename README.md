@@ -86,4 +86,60 @@ sequenceDiagram
     D-->>F: 204 No Content
 ```
 ---
+## 4. Proje Yapısı ve Modüller
 
+### Klasör Yapısı
+```mermaid
+graph TD
+    A[KurumArsivi] --> B[src]
+    A --> C[frontend]
+    A --> D[grafana]
+    B --> E[Dispatcher.API]
+    B --> F[Login.Service]
+    B --> G[Document.Service]
+    B --> H[Search.Service]
+    E --> E1[Middlewares]
+    F --> F1[Controllers]
+    F --> F2[Services]
+    F --> F3[Repositories]
+    F --> F4[Models]
+    G --> G1[Controllers]
+    G --> G2[Services]
+    G --> G3[Repositories]
+    G --> G4[Models]
+    G --> G5[DTOs]
+```
+
+### Servisler
+
+| Servis | Port | Görev |
+|--------|------|-------|
+| Dispatcher | 5000 | API Gateway, JWT doğrulama, yönlendirme |
+| Login Service | 8080 | Kullanıcı kayıt, giriş, JWT üretme |
+| Document Service | 8080 | Belge CRUD işlemleri |
+| Search Service | 8080 | Belge arama ve indeksleme |
+| Frontend | 3000 | Kullanıcı arayüzü |
+| Grafana | 3001 | Log görselleştirme |
+
+### Docker Ağ Yapısı
+```mermaid
+graph LR
+    subgraph public-net
+        Frontend
+        Dispatcher
+        Grafana
+    end
+    subgraph internal-net
+        Dispatcher
+        LoginService
+        DocumentService
+        SearchService
+        MongoDB_Login
+        MongoDB_Document
+        MongoDB_Search
+        MongoDB_Dispatcher
+        Loki
+        Promtail
+    end
+```
+---
