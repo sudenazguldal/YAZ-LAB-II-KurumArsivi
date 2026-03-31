@@ -1,41 +1,53 @@
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using Dispatcher.API.Middlewares;
+using Serilog;
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+try
 {
-    app.MapOpenApi();
+    Log.Information("Starting Dispatcher API");
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Configuration.AddEnvironmentVariables();
+    builder.Services.AddSerilog();
+
+    // HttpClient factory kaydı — RoutingMiddleware bunu kullanacak
+    builder.Services.AddHttpClient();
+
+    //frontend için CORS politikası ekliyoruz. Bu, farklı origin'lerden gelen isteklerin kabul edilmesini sağlar.
+    //Geliştirme aşamasında tüm origin'lere izin veriyoruz,
+    //ancak üretim ortamında bunu daha kısıtlı hale getirmek isteyebilirsiniz.
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    });
+
+    var app = builder.Build();
+
+    //cors en başa
+    app.UseCors();
+    //midddleware'i pipeline'a ekliyoruz. Bu, her isteğin önce AuthMiddleware tarafından işleneceği anlamına gelir.
+    //önce auth kontrolü yapacağız, sonra yönlendirme yapacağız. Bu sırayla ekliyoruz.
+    app.UseMiddleware<RequestLoggingMiddleware>();
+    app.UseMiddleware<AuthMiddleware>();
+    app.UseMiddleware<RoutingMiddleware>();
+
+    // Test amaçlı basit bir sonuç dönüyoruz.
+    app.MapGet("/", () => "Dispatcher Gateway is running.");
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
+catch (Exception ex)
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    Log.Fatal(ex, "Dispatcher API terminated unexpectedly");
+}
+finally
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    Log.CloseAndFlush();
 }

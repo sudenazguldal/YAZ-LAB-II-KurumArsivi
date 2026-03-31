@@ -1,6 +1,59 @@
-@Dispatcher.API_HostAddress = http://localhost:5252
+@token = Bearer
 
-GET {{Dispatcher.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "username": "testuser",
+  "password": "Test123!"
+}
+
+### Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### Admin ile kullanıcı ekle
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "username": "sude",
+  "password": "Test123!",
+  "role": "user"
+}
+
+### Admin ekle
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "username": "newadmin",
+  "password": "Test123!",
+  "role": "admin"
+}
+
+
+### Kullanıcı listesi — admin token ile
+GET http://localhost:5000/api/auth/users
+Authorization: {{token}}
+
+
+### Kullanıcı sil — admin token ile
+DELETE http://localhost:5000/api/auth/users/testuser1
+Authorization: {{token}}
+
+### Rol güncelle — admin token ile
+PUT http://localhost:5000/api/auth/users/sude/role
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "role": "admin"
+}

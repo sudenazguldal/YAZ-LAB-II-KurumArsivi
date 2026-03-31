@@ -1,6 +1,93 @@
-@Document.Service_HostAddress = http://localhost:5053
+@Document.Service_HostAddress = http://localhost:5000
+@token = Bearer 
 
-GET {{Document.Service_HostAddress}}/weatherforecast/
-Accept: application/json
+### Tüm belgeleri getir
+GET {{Document.Service_HostAddress}}/api/documents
+Authorization: {{token}}
+### Yeni belge ekle
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "Test Belgesi",
+  "content": "Bu bir test içeriğidir.",
+  "category": "Test",
+  "uploadedBy": "testuser"
+}
+
+### Belge 1
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "Şirket Yönetmeliği",
+  "content": "Şirket çalışma saatleri 09:00-18:00 arasındadır.",
+  "category": "Yönetmelik",
+  "uploadedBy": "testuser"
+}
 
 ###
+
+### Belge 2
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "İzin Talep Formu",
+  "content": "Yıllık izin talepleri en az 3 gün öncesinden yapılmalıdır.",
+  "category": "Form",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 3
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+{
+  "title": "Toplantı Tutanağı",
+  "content": "Mart ayı toplantısında yeni proje planları görüşüldü.",
+  "category": "Tutanak",
+  "uploadedBy": "testuser"
+}
+
+### Belge 4
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "title": "Bilgi Güvenliği Politikası",
+  "content": "Tüm çalışanlar şirket verilerini korumakla yükümlüdür.",
+  "category": "Politika",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 5
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "title": "Satın Alma Prosedürü",
+  "content": "500 TL üzeri alımlar için müdür onayı gerekmektedir.",
+  "category": "Prosedür",
+  "uploadedBy": "testuser"
+}
+
+###
+
+### Belge 6
+POST {{Document.Service_HostAddress}}/api/documents
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "title": "Personel Özlük Formu",
+  "content": "Yeni işe başlayan personelin doldurması gereken form.",
+  "category": "Form",
+  "uploadedBy": "testuser"
+}

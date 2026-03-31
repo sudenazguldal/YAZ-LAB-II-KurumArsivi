@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurum Arşivi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+
+    <div id="login-page">
+        <div class="login-wrapper">
+            <div class="login-left">
+                <div class="logo">
+                    <i class="bi bi-archive-fill"></i>
+                </div>
+                <h1>Kurum Arşivi</h1>
+                <p>Kurumsal belgelerinize güvenli ve hızlı erişim sağlayan dijital arşiv sistemi.</p>
+            </div>
+            <div class="login-right">
+                <h2>Hoş Geldiniz</h2>
+                <p class="subtitle">Devam etmek için giriş yapın.</p>
+                <div class="input-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" id="username" placeholder="Kullanıcı adınızı girin" />
+                </div>
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" id="password" placeholder="Şifrenizi girin" />
+                </div>
+                <button class="login-btn" onclick="login()">
+                    <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                </button>
+                <p id="login-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-page" style="display:none;">
+        <h1><i class="bi bi-archive-fill"></i> Kurum Arşivi
+            <button class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Çıkış
+            </button>
+        </h1>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Belge ara..." />
+            <button onclick="searchDocuments()">
+                <i class="bi bi-search"></i> Ara
+            </button>
+        </div>
+        <div id="search-results"></div>
+    </div>
+<div id="document-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
+    <div style="background:white; border-radius:16px; padding:40px; width:500px; max-width:90%;">
+        <h2 id="modal-title" style="color:#1a3a6b; margin-bottom:16px;"></h2>
+        <p style="font-size:13px; color:#888; margin-bottom:6px;">Kategori: <span id="modal-category" style="color:#2d6aad; font-weight:600;"></span></p>
+        <p style="font-size:13px; color:#888; margin-bottom:20px;">Yükleyen: <span id="modal-uploadedby" style="color:#2d6aad; font-weight:600;"></span></p>
+        <p id="modal-content" style="color:#333; line-height:1.7; margin-bottom:30px;"></p>
+        <button onclick="closeModal()" style="padding:10px 24px; background:#1a3a6b; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Kapat</button>
+    </div>
+</div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+
+
+networks:
+  public-net:
+  internal-net:
+
+services:
+
+  dispatcher:
+    build:
+      context: .
+      dockerfile: src/Dispatcher.API/Dockerfile
+    ports:
+      - "5000:8080"
+    networks:
+      - public-net
+      - internal-net
+    environment:
+      - MongoDB__ConnectionString=mongodb://mongodb-dispatcher:27017
+      - LoginService__Url=http://login-service:8080
+      - Jwt__Secret=${JWT_SECRET}
+      - DocumentService__Url=http://document-service:8080
+      - SearchService__Url=http://search-service:8080
+    depends_on:
+      - mongodb-dispatcher
+      - login-service
+      - document-service
+      - search-service
+
+  mongodb-dispatcher:
+    image: mongo:7
+    networks:
+      - internal-net
+    volumes:
+      - mongo-dispatcher-data:/data/db
+
+  login-service:
+    build:
+      context: .
+      dockerfile: src/Login.Service/Dockerfile
+    networks:
+      - internal-net
+    environment:
+      - MongoDB__ConnectionString=mongodb://mongodb-login:27017
+      - Jwt__Secret=${JWT_SECRET}
+    depends_on:
+      - mongodb-login
+
+  mongodb-login:
+    image: mongo:7
+    networks:
+      - internal-net
+    volumes:
+      - mongo-login-data:/data/db
+
+  document-service:
+    build:
+      context: .
+      dockerfile: src/Document.Service/Dockerfile
+    networks:
+      - internal-net
+    environment:
+      - MongoDB__ConnectionString=mongodb://mongodb-document:27017
+      - SearchService__Url=http://search-service:8080
+    depends_on:
+      - mongodb-document
+
+  mongodb-document:
+    image: mongo:7
+    networks:
+      - internal-net
+    volumes:
+      - mongo-document-data:/data/db
+
+  search-service:
+    build:
+      context: .
+      dockerfile: src/Search.Service/Dockerfile
+    networks:
+      - internal-net
+    environment:
+      - MongoDB__ConnectionString=mongodb://mongodb-search:27017
+    depends_on:
+      - mongodb-search
+
+  mongodb-search:
+    image: mongo:7
+    networks:
+      - internal-net
+    volumes:
+      - mongo-search-data:/data/db
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - public-net
+    depends_on:
+      - dispatcher  
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    networks:
+      - internal-net
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail-config.yaml:/etc/promtail/config.yml
+    networks:
+      - internal-net
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    ports:
+      - "3001:3000"
+    networks:
+      - public-net
+      - internal-net
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    depends_on:
+      - loki
+volumes:
+  mongo-dispatcher-data:
+  mongo-login-data:
+  mongo-document-data:
+  mongo-search-data:
+
+

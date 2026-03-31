@@ -1,6 +1,38 @@
-@Search.Service_HostAddress = http://localhost:5042
+@token = Bearer 
 
-GET {{Search.Service_HostAddress}}/weatherforecast/
-Accept: application/json
+### Doküman indexle (Document.Service iç ağdan çağırır, ama test için direkt çağıralım)
+POST http://localhost:5000/api/search/index
+Content-Type: application/json
+Authorization: {{token}}
 
-###
+{
+  "documentId": "test-doc-1",
+  "title": "Test Dokümanı",
+  "content": "Bu bir test içeriğidir",
+  "tags": ["test", "deneme"]
+}
+
+### Arama yap
+GET http://localhost:5000/api/search?q=Test
+Authorization: {{token}}
+
+### Tüm dokümanları listele
+GET http://localhost:5000/api/search/all
+Authorization: {{token}}
+
+
+### Title'da ara
+GET http://localhost:5000/api/search?q=Personel
+Authorization: {{token}}
+
+### Content'te ara
+GET http://localhost:5000/api/search?q=personelin
+Authorization: {{token}}
+
+### Tag'de ara
+GET http://localhost:5000/api/search?q=Form
+Authorization: {{token}}
+
+### Olmayan kelime ara
+GET http://localhost:5000/api/search?q=xyz123
+Authorization: {{token}}

@@ -8,4 +8,12 @@
   <Folder Name="/tests/">
     <Project Path="tests/Dispatcher.Tests/Dispatcher.Tests.csproj" />
   </Folder>
+  <Folder Name="/Çözüm Öğeleri/">
+    <File Path=".env" />
+    <File Path="docker-compose.yml" />
+    <File Path="promtail-config.yaml" />
+  </Folder>
+  <Folder Name="/Çözüm Öğeleri/grafana/">
+    <File Path="dashboard.json" />
+  </Folder>
 </Solution>
