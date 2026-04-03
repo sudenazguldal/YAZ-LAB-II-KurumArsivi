@@ -421,6 +421,10 @@ Dispatcher bileşeni için NUnit ile testler yazılmıştır. Testler temel olar
 
   <img width="1050" height="724" alt="image" src="https://github.com/user-attachments/assets/30da4e69-2570-46fe-959d-4fdc09e0cd64" />
 
+  <img width="1538" height="165" alt="Ekran görüntüsü 2026-04-03 100014" src="https://github.com/user-attachments/assets/f76759b9-cc81-4035-98f9-566911bc4aab" />
+  <img width="1551" height="168" alt="Ekran görüntüsü 2026-04-03 100006" src="https://github.com/user-attachments/assets/729b826a-00df-4296-bbaf-9d0ff7fae634" />
+
+
 ## 11. Sonuç ve Tartışma
 
 ###   Elde Edilen Başarılar
