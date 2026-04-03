@@ -425,7 +425,127 @@ Dispatcher bileşeni için NUnit ile testler yazılmıştır. Testler temel olar
   <img width="1551" height="168" alt="Ekran görüntüsü 2026-04-03 100006" src="https://github.com/user-attachments/assets/729b826a-00df-4296-bbaf-9d0ff7fae634" />
 
 
-## 11. Sonuç ve Tartışma
+## 11. Performans ve Yük Testleri
+
+Bu projede **Dispatcher** katmanının yoğun istek trafiği altındaki davranışını ölçmek için **k6** kullanılmıştır. k6 aracının profesyonel bir yük testi aracı olması ve sonuçların **ortalama yanıt süresi**, **P95 yanıt süresi** ve **hata oranı** gibi metriklerle sunulabilmesi, proje isterleriyle uyumludur. Ayrıca test sürecindeki trafik akışı **Grafana** üzerinden grafiksel olarak izlenmiş ve log tablosu ile desteklenmiştir.
+
+---
+
+### Test Senaryosu
+
+Yük testleri, Docker ortamı ayağa kaldırıldıktan sonra **Dispatcher** üzerinden gerçekleştirilmiştir. Test senaryosunda önce `/api/auth/login` endpoint’i ile giriş yapılarak **JWT** alınmış, ardından yetkili istekler Dispatcher üzerinden aşağıdaki endpoint’lere gönderilmiştir:
+
+- `GET /api/auth/users`
+- `GET /api/documents`
+
+Bu senaryo ile aynı anda hem **kimlik doğrulama**, hem **yönlendirme**, hem de **mikroservislere trafik aktarımı** gözlemlenmiştir.
+
+---
+
+### Kullanılan k6 Yaklaşımı
+
+Her sanal kullanıcı (VU), test boyunca aşağıdaki akışı izlemiştir:
+
+1. `POST /api/auth/login` ile giriş yapma  
+2. JWT token alma  
+3. Yetkili olarak sırasıyla:
+   - `GET /api/auth/users`
+   - `GET /api/documents`
+4. Yanıt sürelerini ve hata oranlarını ölçme  
+
+---
+
+### Test Seviyeleri
+
+Projede aşağıdaki yük seviyeleri uygulanmıştır:
+
+- **50 VU – 2 dakika**
+- **100 VU – 2 dakika**
+- **200 VU – 2 dakika**
+- **500 VU – 2 dakika**
+
+Bu test seviyeleri, proje yönergesinde örneklenen eşzamanlı istek senaryolarını karşılamaktadır.
+
+---
+
+### Test Sonuçları
+
+| Yük Seviyesi | Süre | Toplam HTTP İsteği | Ortalama Yanıt Süresi | P95 Yanıt Süresi | Hata Oranı | Sonuç |
+|---|---:|---:|---:|---:|---:|---|
+| 50 VU | 2 dk | 5905 | 18.66 ms | 55.61 ms | 0.00% | Başarılı |
+| 100 VU | 2 dk | 11803 | 20.78 ms | 64.21 ms | 0.00% | Başarılı |
+| 200 VU | 2 dk | 23460 | 23.43 ms | 78.64 ms | 0.00% | Başarılı |
+| 500 VU | 2 dk | 56986 | 54.83 ms | 243.22 ms | 0.00% | Başarılı |
+
+Bu tabloda kullanılan metrikler **k6 test özetlerinden** alınmıştır.  
+50 VU testinde **P95 = 55.61 ms** ve hata oranı **%0**,  
+100 VU testinde **P95 = 64.21 ms** ve hata oranı **%0**,  
+200 VU testinde **P95 = 78.64 ms** ve hata oranı **%0**,  
+500 VU testinde ise **P95 = 243.22 ms** ve hata oranı yine **%0** olarak ölçülmüştür.
+
+---
+
+### Sonuçların Yorumu
+
+Test sonuçları incelendiğinde sistemin yük arttıkça beklenen şekilde daha fazla trafik ürettiği, ancak buna rağmen hata üretmeden çalışmaya devam ettiği görülmüştür. **500 eşzamanlı kullanıcı** seviyesinde bile hata oranının **%0** kalması, Dispatcher katmanının **yönlendirme** ve **yetkilendirme** işlemlerini kararlı biçimde sürdürdüğünü göstermektedir.
+
+Ortalama yanıt süresi ve **P95** değeri yük arttıkça yükselmiş olsa da tüm testlerde kabul edilebilir sınırlar içinde kalmıştır. Özellikle **500 VU** testinde **P95 = 243.22 ms** değeri elde edilmesi, sistemin yoğun yük altında dahi cevap verebildiğini göstermektedir.
+
+---
+
+### k6 Çıktıları
+
+Aşağıda her yük seviyesi için alınan **k6 özet ekran görüntüleri** verilmiştir:
+
+
+
+#### 50 VU – k6 Özet
+<img width="1363" height="828" alt="50-test" src="https://github.com/user-attachments/assets/da9d8bfc-8950-45dc-9a68-5036699e5562" />
+
+
+#### 100 VU – k6 Özet
+<img width="1415" height="865" alt="100-test" src="https://github.com/user-attachments/assets/ab762b5e-bc24-418b-97fa-68a9e19dc084" />
+
+
+#### 200 VU – k6 Özet
+<img width="1484" height="863" alt="200-test" src="https://github.com/user-attachments/assets/093491f1-0d61-4b15-b74f-843d48b366f5" />
+
+
+#### 500 VU – k6 Özet
+<img width="1432" height="840" alt="500-test" src="https://github.com/user-attachments/assets/8356f478-014d-44c9-b8d5-b28df3a40873" />
+
+
+### Grafana ile Trafik İzleme ve Görselleştirme
+
+Projede yalnızca yük testi sonuçları sayısal olarak değerlendirilmemiş, aynı zamanda sistem üzerinden geçen trafik **Grafana** ile görselleştirilmiştir. Bu sayede Dispatcher katmanına gelen istek yoğunluğu, zaman içindeki değişimiyle birlikte grafiksel olarak izlenebilmiştir.
+
+Grafana paneli üzerinden özellikle aşağıdaki noktalar gözlemlenmiştir:
+
+- Dispatcher üzerinden geçen istek sayısının yük arttıkça yükselmesi
+- Trafik yoğunluğunun zamana bağlı değişiminin grafiksel olarak izlenebilmesi
+- Sistem davranışının log kayıtları ile birlikte doğrulanabilmesi
+
+Bu görselleştirme, proje isterlerinde belirtilen **“trafik akışının grafiksel arayüz ile sunulması”** beklentisini karşılamaktadır. Ayrıca Grafana ekranı ile birlikte kullanılan log tablosu, aynı trafik hareketlerinin ayrıntılı kayıtlarını da göstermektedir.
+
+#### Dispatcher İstek Trafiği – Grafana
+
+Aşağıda yük testleri sırasında Dispatcher üzerinden geçen istek trafiğinin Grafana paneli üzerindeki görünümü yer almaktadır:
+
+<img width="1827" height="759" alt="Ekran görüntüsü 2026-04-03 184049" src="https://github.com/user-attachments/assets/81fbe49a-a73b-4a72-b736-bbf233b1a323" />
+
+
+Grafik incelendiğinde, yük seviyesi arttıkça sistemin daha yoğun istek aldığı açık biçimde görülmektedir. Buna rağmen sistemin istekleri işlemeye devam etmesi ve hata üretmemesi, mimarinin yoğun trafik altında da kararlı çalıştığını desteklemektedir.
+
+#### Log Tablosu Görünümü
+
+Grafana ile birlikte log kayıtları da takip edilmiştir. Böylece yalnızca grafiksel trafik yoğunluğu değil, aynı zamanda hangi isteklerin hangi zaman aralığında işlendiği de gözlemlenebilmiştir.
+
+<img width="1826" height="755" alt="Ekran görüntüsü 2026-04-03 184119" src="https://github.com/user-attachments/assets/efca2292-8408-485c-988d-ec944e33d645" />
+
+
+Bu yapı sayesinde sistemin hem **anlık izlenebilirliği** sağlanmış hem de yük testleri sırasında oluşan istek hareketleri ayrıntılı biçimde doğrulanmıştır.
+
+## 12. Sonuç ve Tartışma
 
 ###   Elde Edilen Başarılar
 Bu projede:
