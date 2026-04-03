@@ -73,7 +73,7 @@ graph TD
     Dispatcher --> MongoDB_Dispatcher
 ```
 
-### 4. Mikroservislerin Sorumlulukları
+## 4. Mikroservislerin Sorumlulukları
 
 | Bileşen | Temel Sorumluluk |
 |---|---|
@@ -126,7 +126,7 @@ sequenceDiagram
 ```
 
 
-### 5. Sınıf Yapısı ve OOP Yaklaşımı
+## 5. Sınıf Yapısı ve OOP Yaklaşımı
 Projede katmanlı ve arayüz temelli bir yapı tercih edilmiştir.
 
 - **Controller katmanı** HTTP isteklerini karşılar.
@@ -205,7 +205,7 @@ flowchart TD
     C --> C1[Dispatcher.Tests]
 ```
 
-### 7. Kullanılan Teknolojiler
+## 7. Kullanılan Teknolojiler
 
 | Teknoloji | Kullanım Amacı |
 |---|---|
@@ -223,7 +223,7 @@ flowchart TD
 
 
 
-### 8. Servis Portları ve Görevleri
+## 8. Servis Portları ve Görevleri
 
 | Servis | Container Port | Host Port | Görevi |
 |---|---:|---:|---|
@@ -271,7 +271,7 @@ Bu projede mikroservisler arası güvenlik ve erişim kontrolü için **network 
   - Host makineye `5000:8080` port eşlemesi ile açılmıştır.
   - Sistemin dış dünyaya açık olan ana backend giriş noktasıdır.
 
-- **Login Service** **Document Service** **Search Service** 
+- **Login Service** & **Document Service** & **Search Service** 
   - Yalnızca `internal-net` ağına bağlıdır.
   - Host makineye publish edilmiş bir portu yoktur.
 
@@ -420,4 +420,70 @@ Dispatcher bileşeni için NUnit ile testler yazılmıştır. Testler temel olar
 - Hata durumunda error log üretilmesi
 
   <img width="1050" height="724" alt="image" src="https://github.com/user-attachments/assets/30da4e69-2570-46fe-959d-4fdc09e0cd64" />
+
+## 11. Sonuç ve Tartışma
+
+###   Elde Edilen Başarılar
+Bu projede:
+
+- En az 4 bağımsız bileşenden oluşan mikroservis mimarisi kurulmuştur.
+- Dispatcher sistemin tek giriş noktası olacak şekilde konumlandırılmıştır.
+- JWT tabanlı kimlik doğrulama uygulanmıştır.
+- Yetki kontrolü Dispatcher katmanında merkezi hale getirilmiştir.
+- Login, Document ve Search servisleri ayrıştırılmıştır.
+- Her servis için bağımsız MongoDB kullanılmıştır.
+- Belge oluşturma/güncelleme/silme ile arama indeksinin senkron ilerlemesi sağlanmıştır.
+- Docker Compose ile tüm yapı tek komutla ayağa kaldırılabilir hale getirilmiştir.
+- Logların Grafana-Loki-Promtail ile gözlemlenmesi sağlanmıştır.
+
+###   Sınırlılıklar
+Bu sürümde aşağıdaki sınırlılıklar bulunmaktadır:
+
+- Search işlemi regex tabanlı basit arama yaklaşımı kullanmaktadır; büyük veri kümelerinde daha gelişmiş indeksleme mekanizmaları gerekebilir.
+- Frontend temel seviyede tutulmuştur; kullanıcı deneyimi geliştirilebilir.
+- Yük testi sonuçları ayrıca üretilip rapora eklenmelidir.
+- Dispatcher için ayrı MongoDB container mimaride tanımlı olsa da mevcut sürümde Dispatcher tarafındaki kalıcı veri kullanımı sınırlıdır; bu bölüm teslim öncesi isterlerle tekrar karşılaştırılmalıdır.
+
+###   Olası Geliştirmeler
+İleride aşağıdaki geliştirmeler yapılabilir:
+
+- Search.Service için daha gelişmiş full-text search altyapısı eklenmesi
+- Rol bazlı daha ayrıntılı yetkilendirme politikaları
+- Rate limiting ve circuit breaker mekanizmaları
+- Refresh token yapısı
+- Merkezi configuration yönetimi
+- Sağlık kontrolleri (health checks)
+- Otomatik test kapsamının Login, Document ve Search servislerine genişletilmesi
+- CI/CD hattı kurulması
+
+###  Genel Değerlendirme
+Kurum Arşivi projesi, mikroservis mimarisi, Docker orkestrasyonu, Dispatcher tabanlı trafik yönetimi, JWT doğrulama, TDD yaklaşımı ve temel gözlemlenebilirlik kavramlarını bir araya getiren bütüncül bir uygulama olmuştur. Proje, ders isterlerinde beklenen mimari düşünme, modüler geliştirme ve servis ayrıştırma hedeflerini büyük ölçüde karşılamaktadır.
+
+---
+
+## 12. Projenin İsterlerle Eşleştirilmesi
+
+| İster | Projedeki Karşılığı |
+|---|---|
+| En az 4 bağımsız ünite | Dispatcher + Login + Document + Search + Frontend + izleme bileşenleri |
+| Dispatcher tek giriş noktası | Tüm dış backend erişimi `localhost:5000` üzerinden |
+| TDD | Dispatcher middleware testleri NUnit ile yazılmıştır |
+| RMM Seviye 2 | URI + uygun HTTP method + durum kodları kullanılmıştır |
+| Her servise ayrı NoSQL yapı | Login, Document, Search ve Dispatcher için ayrı MongoDB container tanımlanmıştır |
+| Network Isolation | Mikroservisler host portu olmadan internal ağda çalışmaktadır |
+| JSON veri aktarımı | Servisler arası veri aktarımı JSON formatındadır |
+| Grafiksel izleme ve log tablosu | Grafana + Loki + Promtail ile sağlanmıştır |
+| Dockerize mimari | `docker compose up --build` ile ayağa kalkmaktadır |
+| README raporu | Markdown + Mermaid ile hazırlanmıştır |
+
+---
+
+## 13. Kaynakça
+
+- Markdown Guide
+- Mermaid Documentation
+- Microservices.io
+- RESTful API ve Richardson Maturity Model kaynakları
+- Docker Compose resmi dokümantasyonu
+- TDD ve yazılım mühendisliği literatürü
 
