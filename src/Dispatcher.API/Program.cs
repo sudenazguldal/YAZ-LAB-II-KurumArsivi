@@ -36,6 +36,7 @@ try
     //önce auth kontrolü yapacağız, sonra yönlendirme yapacağız. Bu sırayla ekliyoruz.
     app.UseMiddleware<RequestLoggingMiddleware>();
     app.UseMiddleware<AuthMiddleware>();
+    app.UseMiddleware<AuthorizationMiddleware>();
     app.UseMiddleware<RoutingMiddleware>();
 
     // Test amaçlı basit bir sonuç dönüyoruz.

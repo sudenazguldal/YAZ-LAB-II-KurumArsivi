@@ -45,4 +45,18 @@ public sealed class SearchController : ControllerBase
         var results = await _searchService.GetAllAsync();
         return Ok(results);
     }
+
+    [HttpDelete("index/{documentId}")]
+    public async Task<IActionResult> DeleteIndexedDocument(string documentId)
+    {
+        if (string.IsNullOrWhiteSpace(documentId))
+            return BadRequest(new { message = "DocumentId is required" });
+
+        var deleted = await _searchService.DeleteDocumentAsync(documentId);
+
+        if (!deleted)
+            return NotFound(new { message = "Indexed document not found" });
+
+        return Ok(new { message = "Indexed document deleted successfully" });
+    }
 }

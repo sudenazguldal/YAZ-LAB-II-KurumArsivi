@@ -52,8 +52,17 @@ public class DocumentService : IDocumentService
         await NotifySearchService(document);
     }
 
+
+
+
     public async Task DeleteAsync(string id)
-        => await _repository.DeleteAsync(id);
+    {
+        await _repository.DeleteAsync(id);
+        await RemoveFromSearchService(id);
+    }
+
+
+
 
     private async Task NotifySearchService(DocumentFile document)
     {
@@ -72,6 +81,19 @@ public class DocumentService : IDocumentService
         catch
         {
             // Search Service çevrimdışı olsa bile belge kaydedilsin
+        }
+    }
+
+
+    private async Task RemoveFromSearchService(string documentId)
+    {
+        try
+        {
+            await _httpClient.DeleteAsync($"/api/search/index/{documentId}");
+        }
+        catch
+        {
+            // Search Service çevrimdışı olsa bile belge silinsin
         }
     }
 }

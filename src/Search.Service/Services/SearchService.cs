@@ -80,4 +80,10 @@ internal sealed class SearchService : ISearchService
             CreatedAt = d.CreatedAt
         }).ToList();
     }
+
+    public async Task<bool> DeleteDocumentAsync(string documentId)
+    {
+        var result = await _documents.DeleteOneAsync(d => d.DocumentId == documentId);
+        return result.DeletedCount > 0;
+    }
 }
