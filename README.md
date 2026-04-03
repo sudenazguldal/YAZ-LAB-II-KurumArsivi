@@ -36,6 +36,24 @@ Bu projede REST API tasarımında **Seviye 2** uygulanmıştır:
   - `PUT` → Güncelleme
   - `DELETE` → Silme
   - Uygun HTTP durum kodları: `200`, `201`, `204`, `401`, `403`, `404`, `409`
+ 
+ #### Uygulanan REST örnekleri
+
+- `POST /api/auth/login` → kullanıcı girişi
+- `POST /api/auth/register` → yeni kullanıcı oluşturma
+- `GET /api/auth/users` → kullanıcıları listeleme
+- `DELETE /api/auth/users/{username}` → kullanıcı silme
+- `PUT /api/auth/users/{username}/role` → kullanıcı rolü güncelleme
+- `GET /api/documents` → belgeleri listeleme
+- `GET /api/documents/{id}` → tek belge getirme
+- `POST /api/documents` → belge oluşturma
+- `PUT /api/documents/{id}` → belge güncelleme
+- `DELETE /api/documents/{id}` → belge silme
+- `GET /api/search?q=...` → belge arama
+- `POST /api/search/index` → indeks oluşturma/güncelleme
+- `DELETE /api/search/index/{documentId}` → arama indeksinden belge silme
+
+Bu yapı sayesinde proje, `.../deleteUser?id=1` gibi RPC benzeri tasarım yerine kaynak odaklı REST yaklaşımını kullanmaktadır.
 
 ### Mikroservis Mimarisi
 ```mermaid
@@ -46,10 +64,12 @@ graph TD
     Dispatcher -->|/api/search| SearchService
     LoginService --> MongoDB_Login
     DocumentService --> MongoDB_Document
-    DocumentService -->|index| SearchService
+    DocumentService -->|JSON ile indeksleme isteği| SearchService
     SearchService --> MongoDB_Search
     Dispatcher --> MongoDB_Dispatcher
 ```
+
+
 
 ### Sequence Diyagramı - Login
 ```mermaid
