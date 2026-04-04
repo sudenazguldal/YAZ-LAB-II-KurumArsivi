@@ -1,4 +1,42 @@
-# Kurum Arşivi
+<h1 align="center">YAZ-LAB-II Kurum Arşivi</h1>
+<p align="center">Dispatcher (API Gateway) tabanlı mikroservis mimarisi, JWT doğrulama, MongoDB veri izolasyonu, TDD, Grafana ve k6 yük testleri</p>
+
+<p align="center">
+
+
+
+  <br/>
+
+  <img src="https://img.shields.io/badge/.NET-8.0-60a5fa?style=for-the-badge&logo=dotnet&logoColor=white&labelColor=db2777" />
+  <img src="https://img.shields.io/badge/Docker-Enabled-2563eb?style=for-the-badge&logo=docker&logoColor=white&labelColor=f472b6" />
+  <img src="https://img.shields.io/badge/MongoDB-Database-ec4899?style=for-the-badge&logo=mongodb&logoColor=white&labelColor=1d4ed8" />
+  <img src="https://img.shields.io/badge/Microservices-Architecture-60a5fa?style=for-the-badge&logo=microdotblog&logoColor=white&labelColor=db2777" />
+
+  <br/>
+
+  <img src="https://img.shields.io/badge/Dispatcher-API%20Gateway-f472b6?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=2563eb" />
+  <img src="https://img.shields.io/badge/JWT-Authentication-1d4ed8?style=for-the-badge&logo=jsonwebtokens&logoColor=white&labelColor=ec4899" />
+  <img src="https://img.shields.io/badge/TDD-Tested-60a5fa?style=for-the-badge&logo=testinglibrary&logoColor=white&labelColor=db2777" />
+  <img src="https://img.shields.io/badge/API-REST-f472b6?style=for-the-badge&logo=postman&logoColor=white&labelColor=2563eb" />
+  <img src="https://img.shields.io/badge/RMM-Level%202-2563eb?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=ec4899" />
+
+  <br/>
+
+  <img src="https://img.shields.io/badge/Grafana-Monitoring-ec4899?style=for-the-badge&logo=grafana&logoColor=white&labelColor=1d4ed8" />
+  <img src="https://img.shields.io/badge/k6-Load%20Test-60a5fa?style=for-the-badge&logo=k6&logoColor=white&labelColor=db2777" />
+  <img src="https://img.shields.io/badge/Network-Isolation-f472b6?style=for-the-badge&logo=cloudflare&logoColor=white&labelColor=2563eb" />
+
+</p>
+
+
+
+
+
+
+
+
+
+
 ## 1. Proje Bilgileri
 * **Ders:** Yazılım Geliştirme Laboratuvarı-II / Proje-1
 * **Proje Adı:** Kurum Arşivi
