@@ -1,4 +1,4 @@
-<h1 align="center">YAZ-LAB-II Kurum Arşivi</h1>
+<h1 align="center">Kurum Arşivi</h1>
 <p align="center">Dispatcher (API Gateway) tabanlı mikroservis mimarisi, JWT doğrulama, MongoDB veri izolasyonu, TDD, Grafana ve k6 yük testleri</p>
 
 <p align="center">
@@ -38,9 +38,7 @@
 
 
 ## 1. Proje Bilgileri
-* **Ders:** Yazılım Geliştirme Laboratuvarı-II / Proje-1
 * **Proje Adı:** Kurum Arşivi
-* **Teslim Tarihi:** 05.04.2026
 * **Ekip Üyeleri:**
   * Şevval Ceren Yıldız
   * Sudenaz Güldal
@@ -623,22 +621,7 @@ Kurum Arşivi projesi, mikroservis mimarisi, Docker orkestrasyonu, Dispatcher ta
 
 ---
 
-## 12. Projenin İsterlerle Eşleştirilmesi
 
-| İster | Projedeki Karşılığı |
-|---|---|
-| En az 4 bağımsız ünite | Dispatcher + Login + Document + Search + Frontend + izleme bileşenleri |
-| Dispatcher tek giriş noktası | Tüm dış backend erişimi `localhost:5000` üzerinden |
-| TDD | Dispatcher middleware testleri NUnit ile yazılmıştır |
-| RMM Seviye 2 | URI + uygun HTTP method + durum kodları kullanılmıştır |
-| Her servise ayrı NoSQL yapı | Login, Document, Search ve Dispatcher için ayrı MongoDB container tanımlanmıştır |
-| Network Isolation | Mikroservisler host portu olmadan internal ağda çalışmaktadır |
-| JSON veri aktarımı | Servisler arası veri aktarımı JSON formatındadır |
-| Grafiksel izleme ve log tablosu | Grafana + Loki + Promtail ile sağlanmıştır |
-| Dockerize mimari | `docker compose up --build` ile ayağa kalkmaktadır |
-| README raporu | Markdown + Mermaid ile hazırlanmıştır |
-
----
 
 ## 13. Kaynakça
 
